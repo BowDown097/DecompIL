@@ -6,7 +6,7 @@ namespace NativeTypes
     struct AssemblyTypeMetadata
     {
         TypeAttributes attributes;
-        int handleRowId;
+        int handle;
         bool isCompilerGenerated;
         bool isReadOnly;
         TypeKind kind;
@@ -16,7 +16,7 @@ namespace NativeTypes
 
         AssemblyTypeMetadata(MarshalTypes::AssemblyTypeMetadata&& other)
             : attributes(other.attributes),
-              handleRowId(other.handleRowId),
+              handle(other.handle),
               isCompilerGenerated(other.isCompilerGenerated),
               isReadOnly(other.isReadOnly),
               kind(other.kind),

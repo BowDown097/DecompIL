@@ -1,14 +1,12 @@
-#include "interface.h"
 #include "mainwindow.h"
+#include "interface.h"
 #include "richtextitemdelegate.h"
 #include "ui_mainwindow.h"
-#include "uiutils.h"
+#include "widgets/assemblytreeitem.h"
 #include <QDesktopServices>
-#include <QDirIterator>
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <ranges>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -87,61 +85,10 @@ void MainWindow::openExecutables()
 
         if (auto assemblyInfo = Interface::getAssembly(executable))
         {
-            QTreeWidgetItem* item = UIUtils::createAssemblyItem(assemblyInfo->metadata, executable);
-
-            if (!assemblyInfo->references.empty())
-            {
-                QTreeWidgetItem* referencesItem = new QTreeWidgetItem;
-                referencesItem->setText(0, tr("References"));
-
-                for (const NativeTypes::AssemblyMetadata& refasm : std::as_const(assemblyInfo->references))
-                {
-                    QDirIterator it(executableInfo.dir().absolutePath(), QDir::Files, QDirIterator::Subdirectories);
-
-                    QString path;
-                    while (it.hasNext())
-                    {
-                        if (QFileInfo fileInfo(it.next()); fileInfo.fileName() == refasm.name + ".dll")
-                        {
-                            path = fileInfo.absoluteFilePath();
-                            break;
-                        }
-                    }
-
-                    referencesItem->addChild(UIUtils::createAssemblyItem(refasm, path));
-                }
-
-                item->addChild(referencesItem);
-            }
-
-            std::ranges::sort(assemblyInfo->types, [](const auto& lhs, const auto& rhs) {
-                int comparison = lhs.namespaceName.compare(rhs.namespaceName, Qt::CaseInsensitive);
-                if (comparison < 0) return true;
-                if (comparison > 0) return false;
-                return lhs.name.compare(rhs.name, Qt::CaseInsensitive) < 0;
-            });
-
-            auto chunkedTypes = std::views::chunk_by(assemblyInfo->types, [](const auto& lhs, const auto& rhs) {
-                return lhs.namespaceName == rhs.namespaceName;
-            });
-
-            for (const auto& subrange : chunkedTypes)
-            {
-                const NativeTypes::AssemblyTypeMetadata& first = *subrange.begin();
-
-                QTreeWidgetItem* namespaceItem = new QTreeWidgetItem;
-                if (!first.namespaceName.isEmpty())
-                    namespaceItem->setText(0, UIUtils::formattedValue(first.namespaceName, "#FFD700"));
-                else
-                    namespaceItem->setText(0, "-");
-
-                for (const NativeTypes::AssemblyTypeMetadata& type : subrange)
-                    namespaceItem->addChild(UIUtils::createTypeItem(type));
-
-                item->addChild(namespaceItem);
-            }
-
-            ui->treeWidget->addTopLevelItem(item);
+            AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, executable);
+            assemblyItem->addReferences(assemblyInfo->references, executableInfo.dir().absolutePath());
+            assemblyItem->addTypes(assemblyInfo->types);
+            ui->treeWidget->addTopLevelItem(assemblyItem);
         }
         else
         {

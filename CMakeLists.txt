@@ -43,7 +43,9 @@ set(SOURCE_FILES
     src/main.cpp
     src/mainwindow.cpp
     src/richtextitemdelegate.cpp
-    src/uiutils.cpp)
+    src/uiutils.cpp
+    src/widgets/assemblytreeitem.cpp
+    src/widgets/typetreeitem.cpp)
 
 set(HEADERS
     src/interface.h
@@ -71,7 +73,9 @@ set(HEADERS
     src/interface_types/native/assemblymetadata.h
     src/interface_types/native/assemblypeheaders.h
     src/interface_types/native/assemblysectionheader.h
-    src/interface_types/native/assemblytypemetadata.h)
+    src/interface_types/native/assemblytypemetadata.h
+    src/widgets/assemblytreeitem.h
+    src/widgets/typetreeitem.h)
 
 set(FORMS
     src/mainwindow.ui)

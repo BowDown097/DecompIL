@@ -10,7 +10,7 @@ namespace MarshalTypes
     struct AssemblyTypeMetadata
     {
         TypeAttributes attributes;
-        int handleRowId;
+        int handle;
         bool isCompilerGenerated;
         bool isReadOnly;
         TypeKind kind;
