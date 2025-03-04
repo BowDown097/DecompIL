@@ -4,7 +4,6 @@
 #include "ui_mainwindow.h"
 #include "widgets/assemblytreeitem.h"
 #include "widgets/typetreeitem.h"
-#include <KSyntaxHighlighting/Theme>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMenuBar>
@@ -92,8 +91,8 @@ void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
             return;
         }
 
-        ui->codeEditor->setText(Interface::decompileType(asmParentItem->path(), typeItem->handle()), "C#");
-        qDebug() << Interface::decompileType(asmParentItem->path(), typeItem->handle());
+        ui->codeEditor->setText(
+            Interface::decompileType(asmParentItem->path(), typeItem->handle(), asmParentItem->probingPaths()), "C#");
     }
 }
 
@@ -109,8 +108,8 @@ void MainWindow::openExecutables()
 
         if (auto assemblyInfo = Interface::getAssembly(executable))
         {
-            AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, executable);
-            assemblyItem->addReferences(assemblyInfo->references, executableInfo.dir().absolutePath());
+            AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, executableInfo);
+            assemblyItem->addReferences(assemblyInfo->references);
             assemblyItem->addTypes(assemblyInfo->types);
             ui->treeWidget->addTopLevelItem(assemblyItem);
         }

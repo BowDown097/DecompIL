@@ -1,6 +1,3 @@
-using ICSharpCode.Decompiler;
-using ICSharpCode.Decompiler.TypeSystem;
-
 namespace DotnetBinaryInterface.AssemblyTypes;
 
 [StructLayout(LayoutKind.Sequential)]

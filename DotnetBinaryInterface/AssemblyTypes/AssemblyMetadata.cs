@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-
 namespace DotnetBinaryInterface.AssemblyTypes;
 
 [StructLayout(LayoutKind.Sequential)]

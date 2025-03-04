@@ -2,10 +2,42 @@
 #include "typetreeitem.h"
 #include "uiutils.h"
 #include <QDirIterator>
+#include <QXmlStreamReader>
 #include <ranges>
 
-AssemblyTreeItem::AssemblyTreeItem(const NativeTypes::AssemblyMetadata& metadata, const QString& path, QTreeWidget* treeview)
-    : QTreeWidgetItem(treeview), m_path(path)
+#ifndef __cpp_lib_ranges_concat
+#include "views_concat/concat.hpp"
+#endif
+
+namespace detail
+{
+    QFileInfo locateReferenceAssembly(std::ranges::view auto searchDirs, const QString& refName)
+    {
+        static constexpr std::array DotNetExtensions = { ".dll", ".exe", ".netmodule", ".winmd" };
+
+        for (const QString& searchDir : searchDirs)
+        {
+            QDirIterator it(searchDir, QDir::Files);
+            while (it.hasNext())
+            {
+                if (QFileInfo fileInfo(it.next());
+                    std::ranges::any_of(DotNetExtensions, [fileName = fileInfo.fileName(), &refName](const char* ext) {
+                        return fileName == refName + ext;
+                    }))
+                {
+                    return fileInfo;
+                }
+            }
+        }
+
+        return {};
+    }
+}
+
+AssemblyTreeItem::AssemblyTreeItem(const NativeTypes::AssemblyMetadata& metadata,
+                                   const QFileInfo& fileInfo,
+                                   QTreeWidget* treeview)
+    : QTreeWidgetItem(treeview), m_fileInfo(fileInfo), m_path(fileInfo.absoluteFilePath())
 {
     setText(0, metadata.name + " (" + UIUtils::formattedValue(metadata.version, "#B5CEA8") + ')');
 
@@ -20,27 +52,34 @@ AssemblyTreeItem::AssemblyTreeItem(const NativeTypes::AssemblyMetadata& metadata
         tooltip += UIUtils::formattedKeyValue("PublicKeyToken", "#248F8F", metadata.publicKeyToken, "#B5CEA8") + '\n';
     if (!metadata.commonAttributes.targetFramework.isEmpty())
         tooltip += metadata.commonAttributes.targetFramework + '\n';
-    if (qsizetype nameind = path.lastIndexOf(metadata.name); nameind != -1)
-        tooltip += QString(path).replace(nameind, metadata.name.size(), UIUtils::formattedValue(metadata.name, "#4B8595"));
+    if (qsizetype nameind = m_path.lastIndexOf(metadata.name); nameind != -1)
+        tooltip += QString(m_path).replace(nameind, metadata.name.size(), UIUtils::formattedValue(metadata.name, "#4B8595"));
     tooltip += "</p>";
 
     setToolTip(0, tooltip);
 }
 
-void AssemblyTreeItem::addReferences(const QList<NativeTypes::AssemblyMetadata>& references, const QString& asmPath)
+void AssemblyTreeItem::addReferences(const QList<NativeTypes::AssemblyMetadata>& references)
 {
     if (references.empty())
         return;
 
+    QString asmDir = m_fileInfo.dir().absolutePath();
+
+    if (m_probingPaths.empty())
+        grabProbingPaths(asmDir);
+
     QTreeWidgetItem* referencesItem = new QTreeWidgetItem;
     referencesItem->setText(0, QObject::tr("References"));
 
+    auto searchDirs = std::views::concat(std::views::single(asmDir), m_probingPaths);
+
     for (const NativeTypes::AssemblyMetadata& refasm : references)
     {
-        QString refPath = locateReferenceAssembly(asmPath, refasm.name);
-        if (refPath.isEmpty())
+        QFileInfo refInfo = detail::locateReferenceAssembly(searchDirs, refasm.name);
+        if (!refInfo.exists())
             qDebug() << QObject::tr("Failed to locate path for reference assembly") << refasm.name;
-        referencesItem->addChild(new AssemblyTreeItem(refasm, refPath));
+        referencesItem->addChild(new AssemblyTreeItem(refasm, refInfo));
     }
 
     addChild(referencesItem);
@@ -77,21 +116,26 @@ void AssemblyTreeItem::addTypes(QList<NativeTypes::AssemblyTypeMetadata>& types)
     }
 }
 
-QString AssemblyTreeItem::locateReferenceAssembly(const QString& asmPath, const QString& refName)
+void AssemblyTreeItem::grabProbingPaths(const QString& asmDir)
 {
-    QDirIterator it(asmPath, QDir::Files, QDirIterator::Subdirectories);
-    static constexpr std::array DotNetExtensions = { ".exe", ".dll", ".netmodule", ".winmd" };
+    QFile configFile(m_path + ".config");
 
-    while (it.hasNext())
+    if (configFile.open(QFile::ReadOnly))
     {
-        if (QFileInfo fileInfo(it.next());
-            std::ranges::any_of(DotNetExtensions, [fileName = fileInfo.fileName(), &refName](const char* ext) {
-                return fileName == refName + ext;
-            }))
+        QXmlStreamReader xmlReader(&configFile);
+        while (!xmlReader.atEnd())
         {
-            return fileInfo.absoluteFilePath();
+            if (xmlReader.readNext() == QXmlStreamReader::StartElement && xmlReader.name() == "probing")
+            {
+                const QStringList privatePaths = QString(xmlReader.attributes().value("privatePath")).split(';');
+                for (const QString& privatePath : privatePaths)
+                {
+                    if (!QDir::isAbsolutePath(privatePath))
+                        m_probingPaths.append(QDir::cleanPath(asmDir + '/' + privatePath));
+                    else
+                        m_probingPaths.append(privatePath);
+                }
+            }
         }
     }
-
-    return QString();
 }

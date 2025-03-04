@@ -34,6 +34,7 @@ public unsafe struct MarshalList<T> where T : unmanaged
         }
     }
 
+    public readonly ref T At(int index) => ref _data[index];
     public readonly int Capacity() => _capacity;
     public readonly int Size() => _size;
 

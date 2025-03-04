@@ -7,7 +7,7 @@ public:
     MarshalString(const QString& qString)
         : m_data(new QChar[qString.size() + 1]), m_size(qString.size())
     {
-        std::copy_n(qString.constData(), m_size, m_data);
+        std::copy(qString.begin(), qString.end(), m_data);
         m_data[m_size] = QChar(0);
     }
 

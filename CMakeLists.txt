@@ -75,6 +75,8 @@ set(HEADERS
     src/interface_types/native/assemblypeheaders.h
     src/interface_types/native/assemblysectionheader.h
     src/interface_types/native/assemblytypemetadata.h
+    src/views_concat/concat.hpp
+    src/views_concat/utils.hpp
     src/widgets/assemblytreeitem.h
     src/widgets/codeeditor.h
     src/widgets/typetreeitem.h)
