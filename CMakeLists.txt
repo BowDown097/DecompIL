@@ -45,6 +45,7 @@ set(SOURCE_FILES
     src/richtextitemdelegate.cpp
     src/uiutils.cpp
     src/widgets/assemblytreeitem.cpp
+    src/widgets/codeeditor.cpp
     src/widgets/typetreeitem.cpp)
 
 set(HEADERS
@@ -75,6 +76,7 @@ set(HEADERS
     src/interface_types/native/assemblysectionheader.h
     src/interface_types/native/assemblytypemetadata.h
     src/widgets/assemblytreeitem.h
+    src/widgets/codeeditor.h
     src/widgets/typetreeitem.h)
 
 set(FORMS

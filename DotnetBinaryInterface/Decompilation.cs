@@ -1,3 +1,6 @@
+using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.CSharp;
+
 namespace DotnetBinaryInterface;
 
 // we need to make a wrapper struct because StructureToPtr
@@ -11,6 +14,21 @@ public readonly struct GetAssemblyResult(MarshalExpected<AssemblyInfo, MarshalEx
 
 public static unsafe class Decompilation
 {
+    [UnmanagedCallersOnly(EntryPoint = nameof(DecompileType))]
+    public static MarshalString* DecompileType(MarshalString* assemblyPathIn, TypeDefinitionHandle handle)
+    {
+        string? assemblyPath = assemblyPathIn->ToString();
+        if (assemblyPath is null)
+            return (MarshalString*)IntPtr.Zero;
+
+        CSharpDecompiler decompiler = new(assemblyPath, new DecompilerSettings {
+            ApplyWindowsRuntimeProjections = true,
+            ThrowOnAssemblyResolveErrors = false
+        });
+
+        return Utils.StructureToPtr(new MarshalString(decompiler.DecompileAsString(handle)));
+    }
+
     [UnmanagedCallersOnly(EntryPoint = nameof(GetAssembly))]
     public static GetAssemblyResult* GetAssembly(MarshalString* assemblyPathIn)
     {

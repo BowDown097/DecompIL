@@ -7,8 +7,12 @@ class AssemblyTreeItem : public QTreeWidgetItem
 {
 public:
     AssemblyTreeItem(const NativeTypes::AssemblyMetadata& metadata, const QString& path, QTreeWidget* treeview = nullptr);
+
     void addReferences(const QList<NativeTypes::AssemblyMetadata>& references, const QString& asmPath);
     void addTypes(QList<NativeTypes::AssemblyTypeMetadata>& types); // plain reference because types will be sorted
+
+    const QString& path() const { return m_path; }
 private:
+    QString m_path;
     static QString locateReferenceAssembly(const QString& asmPath, const QString& refName);
 };

@@ -5,7 +5,7 @@
 #include <ranges>
 
 AssemblyTreeItem::AssemblyTreeItem(const NativeTypes::AssemblyMetadata& metadata, const QString& path, QTreeWidget* treeview)
-    : QTreeWidgetItem(treeview)
+    : QTreeWidgetItem(treeview), m_path(path)
 {
     setText(0, metadata.name + " (" + UIUtils::formattedValue(metadata.version, "#B5CEA8") + ')');
 

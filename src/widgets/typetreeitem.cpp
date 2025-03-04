@@ -52,5 +52,6 @@ TypeTreeItem::TypeTreeItem(const NativeTypes::AssemblyTypeMetadata& metadata, QT
     setToolTip(0, tooltip);
 
     for (const NativeTypes::AssemblyTypeMetadata& nestedType : metadata.nestedTypes)
-        addChild(new TypeTreeItem(nestedType, treeview));
+        if (!nestedType.isCompilerGenerated)
+            addChild(new TypeTreeItem(nestedType, treeview));
 }

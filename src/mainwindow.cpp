@@ -3,6 +3,8 @@
 #include "richtextitemdelegate.h"
 #include "ui_mainwindow.h"
 #include "widgets/assemblytreeitem.h"
+#include "widgets/typetreeitem.h"
+#include <KSyntaxHighlighting/Theme>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMenuBar>
@@ -14,6 +16,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
 
     setWindowTitle(DECOMPIL_APP_NAME " v" DECOMPIL_VERSION_NAME);
+    ui->codeEditor->setTabStopDistance(QFontMetrics(ui->codeEditor->font()).horizontalAdvance(' ') * 4);
     ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
 
     QAction* openAction = new QAction(QIcon(":/open_action.svg"), tr("Open"), this);
@@ -61,6 +64,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
     connect(openAction, &QAction::triggered, this, &MainWindow::openExecutables);
     connect(sourceCodeAction, &QAction::triggered, this, &MainWindow::goToRepo);
+    connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainWindow::handleItemDoubleClick);
 }
 
 MainWindow::~MainWindow()
@@ -71,6 +75,26 @@ MainWindow::~MainWindow()
 void MainWindow::goToRepo()
 {
     QDesktopServices::openUrl(QUrl(DECOMPIL_REPO_URL));
+}
+
+void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
+{
+    if (TypeTreeItem* typeItem = dynamic_cast<TypeTreeItem*>(item))
+    {
+        const AssemblyTreeItem* asmParentItem{};
+        QTreeWidgetItem* parentItem = typeItem->parent();
+        while (parentItem && !(asmParentItem = dynamic_cast<const AssemblyTreeItem*>(parentItem)))
+            parentItem = parentItem->parent();
+
+        if (!asmParentItem) [[unlikely]]
+        {
+            qCritical() << "Type item has no parent assembly item? How?";
+            return;
+        }
+
+        ui->codeEditor->setText(Interface::decompileType(asmParentItem->path(), typeItem->handle()), "C#");
+        qDebug() << Interface::decompileType(asmParentItem->path(), typeItem->handle());
+    }
 }
 
 void MainWindow::openExecutables()
