@@ -14,21 +14,27 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QTreeWidget" name="treeWidget">
-      <property name="headerHidden">
-       <bool>true</bool>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
+      <property name="handleWidth">
+       <number>0</number>
+      </property>
+      <widget class="QTreeWidget" name="treeWidget">
+       <property name="headerHidden">
+        <bool>true</bool>
        </property>
-      </column>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="CodeEditor" name="codeEditor"/>
      </widget>
-    </item>
-    <item>
-     <widget class="CodeEditor" name="codeEditor"/>
     </item>
    </layout>
   </widget>

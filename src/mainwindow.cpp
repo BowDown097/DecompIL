@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
 
     setWindowTitle(DECOMPIL_APP_NAME " v" DECOMPIL_VERSION_NAME);
-    ui->codeEditor->setTabStopDistance(QFontMetrics(ui->codeEditor->font()).horizontalAdvance(' ') * 4);
+    ui->codeEditor->setTabStopDistance(QFontMetricsF(ui->codeEditor->font()).horizontalAdvance(' ') * 4);
     ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
 
     QAction* openAction = new QAction(QIcon(":/open_action.svg"), tr("Open"), this);
