@@ -4,51 +4,54 @@
     SPDX-License-Identifier: MIT
 */
 
-#ifndef CODEEDITOR_H
-#define CODEEDITOR_H
-
-#include <KSyntaxHighlighting/Repository>
-
+#pragma once
+#include <mutex>
 #include <QPlainTextEdit>
 
-namespace KSyntaxHighlighting
-{
-class SyntaxHighlighter;
-}
+namespace KSyntaxHighlighting { class Repository; class SyntaxHighlighter; class Theme; }
 
-class CodeEditorSidebar;
+class CodeEditor;
+
+class CodeEditorSidebar : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit CodeEditorSidebar(CodeEditor* editor);
+    QSize sizeHint() const override;
+protected:
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void paintEvent(QPaintEvent* event) override;
+private:
+    CodeEditor* m_codeEditor;
+};
 
 class CodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
-public:
-    explicit CodeEditor(QWidget *parent = nullptr);
-    ~CodeEditor() override;
-
-    void openFile(const QString &fileName);
-    void setText(const QString& text, const QString& defName);
-
-protected:
-    void contextMenuEvent(QContextMenuEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-
-private:
     friend class CodeEditorSidebar;
-    void setTheme(const KSyntaxHighlighting::Theme &theme);
-    int sidebarWidth() const;
-    void sidebarPaintEvent(QPaintEvent *event);
-    void updateSidebarGeometry();
-    void updateSidebarArea(const QRect &rect, int dy);
+public:
+    explicit CodeEditor(QWidget* parent = nullptr);
+    void setText(const QString& text, const QString& defName);
+protected:
+    void contextMenuEvent(QContextMenuEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+private:
+    inline static KSyntaxHighlighting::Repository* m_repository;
+    inline static std::once_flag m_onceFlag;
+
+    KSyntaxHighlighting::SyntaxHighlighter* m_highlighter;
+    CodeEditorSidebar* m_sideBar;
+
     void highlightCurrentLine();
+    void setTheme(const KSyntaxHighlighting::Theme& theme);
+
+    void sidebarPaintEvent(QPaintEvent* event);
+    int sidebarWidth() const;
+    void updateSidebarArea(const QRect& rect, int dy);
+    void updateSidebarGeometry();
 
     QTextBlock blockAtPosition(int y) const;
-    bool isFoldable(const QTextBlock &block) const;
-    bool isFolded(const QTextBlock &block) const;
-    void toggleFold(const QTextBlock &block);
-
-    KSyntaxHighlighting::Repository m_repository;
-    KSyntaxHighlighting::SyntaxHighlighter *m_highlighter;
-    CodeEditorSidebar *m_sideBar;
+    bool isFoldable(const QTextBlock& block) const;
+    bool isFolded(const QTextBlock& block) const;
+    void toggleFold(const QTextBlock& block);
 };
-
-#endif // CODEEDITOR_H
