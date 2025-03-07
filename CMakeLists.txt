@@ -45,8 +45,9 @@ set(SOURCE_FILES
     src/richtextitemdelegate.cpp
     src/uiutils.cpp
     src/widgets/assemblytreeitem.cpp
-    src/widgets/codeeditor.cpp
-    src/widgets/typetreeitem.cpp)
+    src/widgets/typetreeitem.cpp
+    src/widgets/codeeditor/codeeditor.cpp
+    src/widgets/codeeditor/codeeditorsidebar.cpp)
 
 set(HEADERS
     src/interface.h
@@ -78,8 +79,9 @@ set(HEADERS
     src/views_concat/concat.hpp
     src/views_concat/utils.hpp
     src/widgets/assemblytreeitem.h
-    src/widgets/codeeditor.h
-    src/widgets/typetreeitem.h)
+    src/widgets/typetreeitem.h
+    src/widgets/codeeditor/codeeditor.h
+    src/widgets/codeeditor/codeeditorsidebar.h)
 
 set(FORMS
     src/mainwindow.ui)
