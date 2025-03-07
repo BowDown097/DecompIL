@@ -47,6 +47,7 @@ set(SOURCE_FILES
     src/widgets/assemblytreeitem.cpp
     src/widgets/typetreeitem.cpp
     src/widgets/codeeditor/codeeditor.cpp
+    src/widgets/codeeditor/codeeditordefinitions.cpp
     src/widgets/codeeditor/codeeditorsidebar.cpp)
 
 set(HEADERS
@@ -81,6 +82,7 @@ set(HEADERS
     src/widgets/assemblytreeitem.h
     src/widgets/typetreeitem.h
     src/widgets/codeeditor/codeeditor.h
+    src/widgets/codeeditor/codeeditordefinitions.h
     src/widgets/codeeditor/codeeditorsidebar.h)
 
 set(FORMS

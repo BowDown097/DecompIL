@@ -3,6 +3,7 @@
 #include "richtextitemdelegate.h"
 #include "ui_mainwindow.h"
 #include "widgets/assemblytreeitem.h"
+#include "widgets/codeeditor/codeeditordefinitions.h"
 #include "widgets/typetreeitem.h"
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -15,7 +16,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
 
     setWindowTitle(DECOMPIL_APP_NAME " v" DECOMPIL_VERSION_NAME);
-    ui->codeEditor->setTabStopDistance(QFontMetricsF(ui->codeEditor->font()).horizontalAdvance(' ') * 4);
+    ui->codeEditor->setTabStopDistance(ui->codeEditor->fontMetrics().horizontalAdvance(' ') * 4);
     ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
 
     QAction* openAction = new QAction(QIcon(":/open_action.svg"), tr("Open"), this);
@@ -92,7 +93,8 @@ void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
         }
 
         ui->codeEditor->setText(
-            Interface::decompileType(asmParentItem->path(), typeItem->handle(), asmParentItem->probingPaths()), "C#");
+            Interface::decompileType(asmParentItem->path(), typeItem->handle(), asmParentItem->probingPaths()),
+            CodeEditorDefinitions::CSharpDefinition());
     }
 }
 
@@ -111,6 +113,7 @@ void MainWindow::openExecutables()
             AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, executableInfo);
             assemblyItem->addReferences(assemblyInfo->references);
             assemblyItem->addTypes(assemblyInfo->types);
+            CodeEditorDefinitions::addTypes(assemblyInfo->types);
             ui->treeWidget->addTopLevelItem(assemblyItem);
         }
         else

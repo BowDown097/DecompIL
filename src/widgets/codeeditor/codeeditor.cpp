@@ -5,6 +5,7 @@
 */
 
 #include "codeeditor.h"
+#include "codeeditordefinitions.h"
 #include "codeeditorsidebar.h"
 #include <KSyntaxHighlighting/Repository>
 #include <KSyntaxHighlighting/SyntaxHighlighter>
@@ -18,13 +19,11 @@ CodeEditor::CodeEditor(QWidget* parent)
       m_highlighter(new KSyntaxHighlighting::SyntaxHighlighter(document())),
       m_sideBar(new CodeEditorSidebar(this))
 {
-    std::call_once(m_onceFlag, [] { m_repository = new KSyntaxHighlighting::Repository; });
-
     setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 
     setTheme(palette().color(QPalette::Base).lightness() < 128
-        ? m_repository->defaultTheme(KSyntaxHighlighting::Repository::DarkTheme)
-        : m_repository->defaultTheme(KSyntaxHighlighting::Repository::LightTheme));
+        ? CodeEditorDefinitions::repository().defaultTheme(KSyntaxHighlighting::Repository::DarkTheme)
+        : CodeEditorDefinitions::repository().defaultTheme(KSyntaxHighlighting::Repository::LightTheme));
 
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::updateSidebarGeometry);
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::updateSidebarArea);
@@ -34,10 +33,10 @@ CodeEditor::CodeEditor(QWidget* parent)
     highlightCurrentLine();
 }
 
-void CodeEditor::setText(const QString& text, const QString& defName)
+void CodeEditor::setText(const QString& text, const KSyntaxHighlighting::Definition& definition)
 {
     clear();
-    m_highlighter->setDefinition(m_repository->definitionForName(defName));
+    m_highlighter->setDefinition(definition);
     setPlainText(text);
 }
 
@@ -51,7 +50,7 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent* event)
     themeGroup->setExclusive(true);
 
     QMenu* themeMenu = menu->addMenu(QStringLiteral("Theme"));
-    const QList<KSyntaxHighlighting::Theme> themes = m_repository->themes();
+    const QList<KSyntaxHighlighting::Theme> themes = CodeEditorDefinitions::repository().themes();
 
     for (const KSyntaxHighlighting::Theme& theme : themes)
     {
@@ -65,7 +64,7 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent* event)
     }
 
     connect(themeGroup, &QActionGroup::triggered, this, [this](QAction* action) {
-        setTheme(m_repository->theme(action->data().toString()));
+        setTheme(CodeEditorDefinitions::repository().theme(action->data().toString()));
     });
 
     menu->exec(event->globalPos());

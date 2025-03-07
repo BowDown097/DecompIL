@@ -5,10 +5,9 @@
 */
 
 #pragma once
-#include <mutex>
 #include <QPlainTextEdit>
 
-namespace KSyntaxHighlighting { class Repository; class SyntaxHighlighter; class Theme; }
+namespace KSyntaxHighlighting { class Definition; class SyntaxHighlighter; class Theme; }
 
 class CodeEditorSidebar;
 
@@ -18,14 +17,11 @@ class CodeEditor : public QPlainTextEdit
     friend class CodeEditorSidebar;
 public:
     explicit CodeEditor(QWidget* parent = nullptr);
-    void setText(const QString& text, const QString& defName);
+    void setText(const QString& text, const KSyntaxHighlighting::Definition& definition);
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
 private:
-    inline static KSyntaxHighlighting::Repository* m_repository;
-    inline static std::once_flag m_onceFlag;
-
     KSyntaxHighlighting::SyntaxHighlighter* m_highlighter;
     CodeEditorSidebar* m_sideBar;
 

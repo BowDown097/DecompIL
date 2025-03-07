@@ -29,5 +29,18 @@ namespace NativeTypes
             return enum_ops::has_flag(attributes, TypeAttributes::Abstract) &&
                    enum_ops::has_flag(attributes, TypeAttributes::Sealed);
         }
+
+        friend std::strong_ordering operator<=>(
+            const NativeTypes::AssemblyTypeMetadata& lhs, const NativeTypes::AssemblyTypeMetadata& rhs)
+        {
+            if (std::strong_ordering cmp = lhs.namespaceName <=> rhs.namespaceName; cmp != 0) return cmp;
+            return lhs.name <=> rhs.name;
+        }
+
+        friend std::strong_ordering operator<=>(
+            const NativeTypes::AssemblyTypeMetadata& meta, const QString& name)
+        {
+            return meta.name <=> name;
+        }
     };
 }
