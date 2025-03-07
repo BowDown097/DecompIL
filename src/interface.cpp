@@ -3,7 +3,7 @@
 
 LibraryHandle libHandle("./" DECOMPIL_BINARY_INTERFACE_NAME);
 
-QString Interface::decompileType(const QString& assemblyPath, int handle, const QStringList& probingPaths)
+QString Interface::decompileType(const QString& assemblyPath, TypeDefinitionHandle handle, const QStringList& probingPaths)
 {
     auto decompileType = fnDecompileType(libHandle.resolveFunction("DecompileType"));
     std::unique_ptr<MarshalString> res(decompileType(assemblyPath, handle, probingPaths));

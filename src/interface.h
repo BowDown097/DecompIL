@@ -6,11 +6,11 @@
 class Interface
 {
 public:
-    static QString decompileType(const QString& assemblyPath, int handle, const QStringList& probingPaths);
+    static QString decompileType(const QString& assemblyPath, TypeDefinitionHandle handle, const QStringList& probingPaths);
     static MarshalExpected<NativeTypes::AssemblyInfo, MarshalException> getAssembly(const QString& assemblyPath);
 private:
     typedef MarshalString* (*fnDecompileType)(
-        const MarshalString& assemblyPath, int handle, const MarshalList<MarshalString>& referenceDirs);
+        const MarshalString& assemblyPath, TypeDefinitionHandle handle, const MarshalList<MarshalString>& referenceDirs);
     typedef MarshalExpected<MarshalTypes::AssemblyInfo, MarshalException>* (*fnGetAssembly)(
         const MarshalString& assemblyPath);
 };

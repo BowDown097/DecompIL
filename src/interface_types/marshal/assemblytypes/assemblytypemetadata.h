@@ -4,13 +4,14 @@
 #include "shared.h"
 
 enum class TypeKind { Class, Delegate, Enum, Interface, Struct };
+using TypeDefinitionHandle = int;
 
 namespace MarshalTypes
 {
     struct AssemblyTypeMetadata
     {
         TypeAttributes attributes;
-        int handle;
+        TypeDefinitionHandle handle;
         bool isCompilerGenerated;
         bool isReadOnly;
         TypeKind kind;

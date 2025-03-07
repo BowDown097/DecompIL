@@ -6,7 +6,7 @@ namespace NativeTypes
     struct AssemblyTypeMetadata
     {
         TypeAttributes attributes;
-        int handle;
+        TypeDefinitionHandle handle;
         bool isCompilerGenerated;
         bool isReadOnly;
         TypeKind kind;
