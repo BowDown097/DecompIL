@@ -21,6 +21,6 @@ private:
 private slots:
     void goToRepo();
     void handleItemDoubleClick(QTreeWidgetItem* item, int);
-    void openExecutables();
+    void openAssemblies();
     void toggleFullScreen();
 };

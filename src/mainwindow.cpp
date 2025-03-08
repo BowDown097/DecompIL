@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
     helpMenu->addAction(aboutAction);
 
     connect(fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
-    connect(openAction, &QAction::triggered, this, &MainWindow::openExecutables);
+    connect(openAction, &QAction::triggered, this, &MainWindow::openAssemblies);
     connect(sourceCodeAction, &QAction::triggered, this, &MainWindow::goToRepo);
     connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainWindow::handleItemDoubleClick);
 }
@@ -94,23 +94,23 @@ void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
 
         ui->codeEditor->setText(
             Interface::decompileType(asmParentItem->path(), typeItem->handle(), asmParentItem->probingPaths()),
-            CodeEditorDefinitions::CSharpDefinition());
+            CodeEditor::DisplayLanguage::CSharp);
     }
 }
 
-void MainWindow::openExecutables()
+void MainWindow::openAssemblies()
 {
-    const QStringList executables = QFileDialog::getOpenFileNames(
+    const QStringList assemblyPaths = QFileDialog::getOpenFileNames(
         this, tr("Choose .NET executable(s)"), QString(),
         tr(".NET Executables (*.exe *.dll *.netmodule *.winmd);;All Files (*)"));
 
-    for (const QString& executable : executables)
+    for (const QString& assemblyPath : assemblyPaths)
     {
-        QFileInfo executableInfo(executable);
+        QFileInfo assemblyFile(assemblyPath);
 
-        if (auto assemblyInfo = Interface::getAssembly(executable))
+        if (auto assemblyInfo = Interface::getAssembly(assemblyPath))
         {
-            AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, executableInfo);
+            AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, assemblyFile);
             assemblyItem->addReferences(assemblyInfo->references);
             assemblyItem->addTypes(assemblyInfo->types);
             CodeEditorDefinitions::addTypes(assemblyInfo->types);
@@ -119,7 +119,7 @@ void MainWindow::openExecutables()
         else
         {
             QMessageBox::critical(this, tr("Loading assembly failed"),
-                executableInfo.fileName() + tr(" threw exception:\n") + assemblyInfo.error().what());
+                assemblyFile.fileName() + tr(" threw exception:\n") + assemblyInfo.error().what());
         }
 
         QCoreApplication::processEvents();

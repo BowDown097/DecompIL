@@ -8,52 +8,68 @@ KSyntaxHighlighting::Definition& CodeEditorDefinitions::CILDefinition()
     return def;
 }
 
+QStringList& CodeEditorDefinitions::CILTypeList()
+{
+    static QStringList list = CILDefinition().keywordList("type-list");
+    return list;
+}
+
 KSyntaxHighlighting::Definition& CodeEditorDefinitions::CSharpDefinition()
 {
     static KSyntaxHighlighting::Definition def = repository().definitionForName("C#");
     return def;
 }
 
-KSyntaxHighlighting::Repository& CodeEditorDefinitions::repository()
+QStringList& CodeEditorDefinitions::CSharpTypeList()
+{
+    static QStringList list = CSharpDefinition().keywordList("types");
+    return list;
+}
+
+const KSyntaxHighlighting::Repository& CodeEditorDefinitions::repository()
 {
     static KSyntaxHighlighting::Repository repo;
     return repo;
 }
 
-void CodeEditorDefinitions::addTypes(const QList<NativeTypes::AssemblyTypeMetadata>& types)
+void CodeEditorDefinitions::addType(const NativeTypes::AssemblyTypeMetadata& type)
 {
-    QStringList csList = CSharpDefinition().keywordList("types");
-    QStringList cilList = CILDefinition().keywordList("type-list");
-
-    for (const NativeTypes::AssemblyTypeMetadata& type : types)
+    if (s_customTypes.insert(type).second)
     {
-        if (s_customTypes.insert(type).second)
-        {
-            csList.append(type.name);
-            cilList.append(type.name);
-        }
+        CSharpTypeList().append(type.name);
+        CILTypeList().append(type.name);
     }
 
-    CSharpDefinition().setKeywordList("types", csList);
-    CILDefinition().setKeywordList("type-list", cilList);
+    for (const NativeTypes::AssemblyTypeMetadata& nestedType : type.nestedTypes)
+        addType(nestedType);
+}
+
+void CodeEditorDefinitions::addTypes(const QList<NativeTypes::AssemblyTypeMetadata>& types)
+{
+    for (const NativeTypes::AssemblyTypeMetadata& type : types)
+        addType(type);
+    CSharpDefinition().setKeywordList("types", CSharpTypeList());
+    CILDefinition().setKeywordList("type-list", CILTypeList());
+}
+
+void CodeEditorDefinitions::removeType(const NativeTypes::AssemblyTypeMetadata& type)
+{
+    if (s_customTypes.erase(type))
+    {
+        CSharpTypeList().removeOne(type.name);
+        CILTypeList().removeOne(type.name);
+    }
+
+    for (const NativeTypes::AssemblyTypeMetadata& nestedType : type.nestedTypes)
+        removeType(nestedType);
 }
 
 void CodeEditorDefinitions::removeTypes(const QList<NativeTypes::AssemblyTypeMetadata>& types)
 {
-    QStringList csList = CSharpDefinition().keywordList("types");
-    QStringList cilList = CILDefinition().keywordList("type-list");
-
     for (const NativeTypes::AssemblyTypeMetadata& type : types)
-    {
-        if (s_customTypes.erase(type))
-        {
-            csList.removeOne(type.name);
-            cilList.removeOne(type.name);
-        }
-    }
-
-    CSharpDefinition().setKeywordList("types", csList);
-    CILDefinition().setKeywordList("type-list", cilList);
+        removeType(type);
+    CSharpDefinition().setKeywordList("types", CSharpTypeList());
+    CILDefinition().setKeywordList("type-list", CILTypeList());
 }
 
 CodeEditorDefinitions::TypeRange CodeEditorDefinitions::match(const QString& name)

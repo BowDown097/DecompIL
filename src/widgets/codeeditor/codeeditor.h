@@ -16,8 +16,10 @@ class CodeEditor : public QPlainTextEdit
     Q_OBJECT
     friend class CodeEditorSidebar;
 public:
+    enum class DisplayLanguage { CIL, CSharp };
+
     explicit CodeEditor(QWidget* parent = nullptr);
-    void setText(const QString& text, const KSyntaxHighlighting::Definition& definition);
+    void setText(const QString& text, DisplayLanguage language);
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;

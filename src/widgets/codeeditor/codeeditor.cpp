@@ -33,10 +33,12 @@ CodeEditor::CodeEditor(QWidget* parent)
     highlightCurrentLine();
 }
 
-void CodeEditor::setText(const QString& text, const KSyntaxHighlighting::Definition& definition)
+void CodeEditor::setText(const QString& text, DisplayLanguage language)
 {
     clear();
-    m_highlighter->setDefinition(definition);
+    m_highlighter->setDefinition(language == DisplayLanguage::CSharp
+        ? CodeEditorDefinitions::CSharpDefinition()
+        : CodeEditorDefinitions::CILDefinition());
     setPlainText(text);
 }
 
