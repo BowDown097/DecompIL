@@ -103,46 +103,25 @@ public:
 
     const T* operator->() const noexcept { return static_cast<T*>(m_ptr); }
     T* operator->() noexcept { return static_cast<T*>(m_ptr); }
-    const T& operator*() const& noexcept { return *static_cast<T*>(m_ptr); }
-    T& operator*() & noexcept { return *static_cast<T*>(m_ptr); }
-    const T&& operator*() const&& noexcept { return std::move(*static_cast<T*>(m_ptr)); }
-    T&& operator*() && noexcept { return std::move(*static_cast<T*>(m_ptr)); }
+
+    template<class Self>
+    auto&& operator*(this Self&& self) noexcept
+    { return *static_cast<T*>(std::forward<Self>(self).m_ptr); }
 
     explicit operator bool() const noexcept { return m_hasValue; }
     bool has_value() const noexcept { return m_hasValue; }
 
-    T& value() &
+    template<class Self>
+    auto&& value(this Self&& self)
     {
-        if (!m_hasValue)
-            throw std::runtime_error("Expected type has no value.");
-        return *static_cast<T*>(m_ptr);
+        if (self.has_value())
+            return *static_cast<T*>(std::forward<Self>(self).m_ptr);
+        throw std::runtime_error("Expected type has no value.");
     }
 
-    const T& value() const&
-    {
-        if (!m_hasValue)
-            throw std::runtime_error("Expected type has no value.");
-        return *static_cast<T*>(m_ptr);
-    }
-
-    T&& value() &&
-    {
-        if (!m_hasValue)
-            throw std::runtime_error("Expected type has no value.");
-        return std::move(*static_cast<T*>(m_ptr));
-    }
-
-    const T&& value() const&&
-    {
-        if (!m_hasValue)
-            throw std::runtime_error("Expected type has no value.");
-        return std::move(*static_cast<T*>(m_ptr));
-    }
-
-    E& error() & noexcept { return *static_cast<E*>(m_ptr); }
-    const E& error() const& noexcept { return *static_cast<E*>(m_ptr); }
-    E&& error() && noexcept { return std::move(*static_cast<E*>(m_ptr)); }
-    const E&& error() const&& noexcept { return std::move(*static_cast<E*>(m_ptr)); }
+    template<class Self>
+    auto&& error(this Self&& self) noexcept
+    { return *static_cast<E*>(std::forward<Self>(self).m_ptr); }
 private:
     void* m_ptr;
     bool m_hasValue;

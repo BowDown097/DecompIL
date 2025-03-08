@@ -62,6 +62,6 @@ public:
         return QString(m_data, m_size);
     }
 private:
-    QChar* m_data{};
-    int m_size{};
+    QChar* m_data;
+    int m_size;
 };

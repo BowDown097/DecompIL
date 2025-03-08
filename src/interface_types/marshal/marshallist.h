@@ -76,12 +76,12 @@ public:
         out.reserve(m_size);
 
         for (int i = 0; i < m_size; ++i)
-            out.append(std::move(m_data[i]));
+            out.emplaceBack(std::move(m_data[i])); // emplaceBack is used to preserve move, which afaik append doesn't
 
         return out;
     }
 private:
-    T* m_data{};
-    int m_capacity{};
-    int m_size{};
+    T* m_data;
+    int m_capacity;
+    int m_size;
 };

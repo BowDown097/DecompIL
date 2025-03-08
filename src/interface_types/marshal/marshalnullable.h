@@ -50,39 +50,19 @@ public:
 
     const T* operator->() const noexcept { return m_value; }
     T* operator->() noexcept { return m_value; }
-    const T& operator*() const& noexcept { return *m_value; }
-    T& operator*() & noexcept { return *m_value; }
-    const T&& operator*() const&& noexcept { return std::move(*m_value); }
-    T&& operator*() && noexcept { return std::move(*m_value); }
+
+    template<class Self>
+    auto&& operator*(this Self&& self) noexcept
+    { return *std::forward<Self>(self).m_value; }
 
     explicit operator bool() const noexcept { return m_hasValue; }
     bool has_value() const noexcept { return m_hasValue; }
 
-    T& value() &
+    template<class Self>
+    auto&& value(this Self&& self)
     {
-        if (m_hasValue)
-            return *m_value;
-        throw std::runtime_error("Nullable type has no value.");
-    }
-
-    const T& value() const&
-    {
-        if (m_hasValue)
-            return *m_value;
-        throw std::runtime_error("Nullable type has no value.");
-    }
-
-    T&& value() &&
-    {
-        if (m_hasValue)
-            return std::move(*m_value);
-        throw std::runtime_error("Nullable type has no value.");
-    }
-
-    const T&& value() const&&
-    {
-        if (m_hasValue)
-            return std::move(*m_value);
+        if (self.has_value())
+            return *std::forward<Self>(self).m_value;
         throw std::runtime_error("Nullable type has no value.");
     }
 private:
