@@ -61,9 +61,24 @@ MainWindow::MainWindow(QWidget* parent)
     helpMenu->addAction(sourceCodeAction);
     helpMenu->addAction(aboutAction);
 
-    connect(fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
+    connect(closeAllAction, &QAction::triggered, this, &MainWindow::closeAssemblies);
     connect(openAction, &QAction::triggered, this, &MainWindow::openAssemblies);
+    connect(reloadAllAction, &QAction::triggered, this, &MainWindow::reloadAssemblies);
+    connect(sortAssembliesAction, &QAction::triggered, this, &MainWindow::sortAssemblies);
+
+    connect(findAction, &QAction::triggered, this, &MainWindow::findInEditor);
+    connect(redoAction, &QAction::triggered, this, &MainWindow::redoInEditor);
+    connect(searchAssembliesAction, &QAction::triggered, this, &MainWindow::searchAssemblies);
+    connect(undoAction, &QAction::triggered, this, &MainWindow::undoInEditor);
+
+    connect(collapseTreeNodesAction, &QAction::triggered, this, &MainWindow::collapseTreeNodes);
+    connect(fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
+    connect(optionsAction, &QAction::triggered, this, &MainWindow::openOptionsWindow);
+    connect(wordWrapAction, &QAction::triggered, this, &MainWindow::toggleWordWrap);
+
     connect(sourceCodeAction, &QAction::triggered, this, &MainWindow::goToRepo);
+    connect(aboutAction, &QAction::triggered, this, &MainWindow::openAboutWindow);
+
     connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainWindow::handleItemDoubleClick);
 }
 
@@ -72,14 +87,127 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::openAssembly(const QString& path)
+{
+    QFileInfo fileInfo(path);
+    if (auto assemblyInfo = Interface::getAssembly(path))
+    {
+        AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, fileInfo);
+        assemblyItem->addReferences(assemblyInfo->references);
+        assemblyItem->addTypes(assemblyInfo->types);
+        CodeEditorDefinitions::addTypes(assemblyInfo->types);
+        ui->treeWidget->addTopLevelItem(assemblyItem);
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Loading assembly failed"),
+            fileInfo.fileName() + tr(" threw exception:\n") + assemblyInfo.error().what());
+    }
+}
+
+void MainWindow::closeAssemblies()
+{
+    ui->treeWidget->clear();
+}
+
+void MainWindow::openAssemblies()
+{
+    const QStringList assemblyPaths = QFileDialog::getOpenFileNames(
+        this, tr("Choose .NET executable(s)"), QString(),
+        tr(".NET Executables (*.exe *.dll *.netmodule *.winmd);;All Files (*)"));
+
+    for (const QString& assemblyPath : assemblyPaths)
+    {
+        openAssembly(assemblyPath);
+        QCoreApplication::processEvents();
+    }
+}
+
+void MainWindow::reloadAssemblies()
+{
+    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); ++i)
+    {
+        if (const AssemblyTreeItem* item = dynamic_cast<AssemblyTreeItem*>(ui->treeWidget->takeTopLevelItem(0)))
+            openAssembly(item->path());
+        QCoreApplication::processEvents();
+    }
+}
+
+// sortItems() exists, buuutt it's case sensitive :/ so we have to reimplement it
+void MainWindow::sortAssemblies()
+{
+    QList<QTreeWidgetItem*> items(ui->treeWidget->topLevelItemCount());
+    for (int i = 0; i < items.size(); ++i)
+        items[i] = ui->treeWidget->topLevelItem(i);
+
+    std::ranges::sort(items, [](const QTreeWidgetItem* lhs, const QTreeWidgetItem* rhs) {
+        return lhs->text(0).compare(rhs->text(0), Qt::CaseInsensitive) < 0;
+    });
+
+    for (int i = 0; i < items.size(); ++i)
+    {
+        ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(items[i]));
+        ui->treeWidget->insertTopLevelItem(i, items[i]);
+    }
+}
+
+void MainWindow::findInEditor()
+{
+
+}
+
+void MainWindow::redoInEditor()
+{
+    ui->codeEditor->redo();
+}
+
+void MainWindow::searchAssemblies()
+{
+
+}
+
+void MainWindow::undoInEditor()
+{
+    ui->codeEditor->undo();
+}
+
+void MainWindow::collapseTreeNodes()
+{
+    ui->treeWidget->collapseAll();
+}
+
+void MainWindow::openOptionsWindow()
+{
+
+}
+
+void MainWindow::toggleFullScreen()
+{
+    if (windowState() == Qt::WindowFullScreen)
+        showNormal();
+    else
+        showFullScreen();
+}
+
+void MainWindow::toggleWordWrap()
+{
+    ui->codeEditor->setWordWrapMode(ui->codeEditor->wordWrapMode() == QTextOption::WrapAtWordBoundaryOrAnywhere
+        ? QTextOption::NoWrap : QTextOption::WrapAtWordBoundaryOrAnywhere);
+}
+
 void MainWindow::goToRepo()
 {
     QDesktopServices::openUrl(QUrl(DECOMPIL_REPO_URL));
 }
 
+void MainWindow::openAboutWindow()
+{
+
+}
+
 void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
 {
-    if (TypeTreeItem* typeItem = dynamic_cast<TypeTreeItem*>(item))
+    if (const TypeTreeItem* typeItem = dynamic_cast<TypeTreeItem*>(item))
     {
         const AssemblyTreeItem* asmParentItem{};
         QTreeWidgetItem* parentItem = typeItem->parent();
@@ -96,40 +224,4 @@ void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
             Interface::decompileType(asmParentItem->path(), typeItem->handle(), asmParentItem->probingPaths()),
             CodeEditor::DisplayLanguage::CSharp);
     }
-}
-
-void MainWindow::openAssemblies()
-{
-    const QStringList assemblyPaths = QFileDialog::getOpenFileNames(
-        this, tr("Choose .NET executable(s)"), QString(),
-        tr(".NET Executables (*.exe *.dll *.netmodule *.winmd);;All Files (*)"));
-
-    for (const QString& assemblyPath : assemblyPaths)
-    {
-        QFileInfo assemblyFile(assemblyPath);
-
-        if (auto assemblyInfo = Interface::getAssembly(assemblyPath))
-        {
-            AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, assemblyFile);
-            assemblyItem->addReferences(assemblyInfo->references);
-            assemblyItem->addTypes(assemblyInfo->types);
-            CodeEditorDefinitions::addTypes(assemblyInfo->types);
-            ui->treeWidget->addTopLevelItem(assemblyItem);
-        }
-        else
-        {
-            QMessageBox::critical(this, tr("Loading assembly failed"),
-                assemblyFile.fileName() + tr(" threw exception:\n") + assemblyInfo.error().what());
-        }
-
-        QCoreApplication::processEvents();
-    }
-}
-
-void MainWindow::toggleFullScreen()
-{
-    if (windowState() == Qt::WindowFullScreen)
-        showNormal();
-    else
-        showFullScreen();
 }
