@@ -10,9 +10,6 @@
     <height>600</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>MainWindow</string>
-  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
@@ -29,11 +26,15 @@
        </property>
        <column>
         <property name="text">
-         <string notr="true">1</string>
+         <string/>
         </property>
        </column>
       </widget>
-      <widget class="CodeEditor" name="codeEditor"/>
+      <widget class="CodeEditor" name="codeEditor">
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>

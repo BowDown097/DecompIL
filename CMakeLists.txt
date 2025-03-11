@@ -44,6 +44,7 @@ set(SOURCE_FILES
     src/richtextitemdelegate.cpp
     src/uiutils.cpp
     src/widgets/assemblytreeitem.cpp
+    src/widgets/findbar.cpp
     src/widgets/typetreeitem.cpp
     src/widgets/codeeditor/codeeditor.cpp
     src/widgets/codeeditor/codeeditordefinitions.cpp
@@ -79,13 +80,15 @@ set(HEADERS
     src/views_concat/concat.hpp
     src/views_concat/utils.hpp
     src/widgets/assemblytreeitem.h
+    src/widgets/findbar.h
     src/widgets/typetreeitem.h
     src/widgets/codeeditor/codeeditor.h
     src/widgets/codeeditor/codeeditordefinitions.h
     src/widgets/codeeditor/codeeditorsidebar.h)
 
 set(FORMS
-    src/mainwindow.ui)
+    src/mainwindow.ui
+    src/widgets/findbar.ui)
 
 if(WIN32)
     add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SOURCE_FILES} ${HEADERS} ${FORMS})

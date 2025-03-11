@@ -1,9 +1,10 @@
 #include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include "interface.h"
 #include "richtextitemdelegate.h"
-#include "ui_mainwindow.h"
 #include "widgets/assemblytreeitem.h"
 #include "widgets/codeeditor/codeeditordefinitions.h"
+#include "widgets/findbar.h"
 #include "widgets/typetreeitem.h"
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -14,6 +15,7 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    findBar = new FindBar(ui->codeEditor);
 
     setWindowTitle(DECOMPIL_APP_NAME " v" DECOMPIL_VERSION_NAME);
     ui->codeEditor->setTabStopDistance(ui->codeEditor->fontMetrics().horizontalAdvance(' ') * 4);
@@ -153,7 +155,7 @@ void MainWindow::sortAssemblies()
 
 void MainWindow::findInEditor()
 {
-
+    findBar->setReveal(findBar->isHidden());
 }
 
 void MainWindow::redoInEditor()

@@ -8,6 +8,7 @@ class MainWindow;
 QT_END_NAMESPACE
 
 class CodeEditor;
+class FindBar;
 class QTreeWidgetItem;
 
 class MainWindow : public QMainWindow
@@ -17,7 +18,9 @@ public:
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 private:
+    FindBar* findBar;
     Ui::MainWindow* ui;
+
     void openAssembly(const QString& path);
 private slots:
     void closeAssemblies();
