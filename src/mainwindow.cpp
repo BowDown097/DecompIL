@@ -22,65 +22,23 @@ MainWindow::MainWindow(QWidget* parent)
     ui->codeEditor->setTabStopDistance(ui->codeEditor->fontMetrics().horizontalAdvance(' ') * 4);
     ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
 
-    QAction* openAction = new QAction(QIcon(":/open_action.svg"), tr("Open"), this);
-    QAction* reloadAllAction = new QAction(QIcon(":/reload_action.svg"), tr("Reload All Assemblies"), this);
-    QAction* closeAllAction = new QAction(QIcon(":/close_all_action.svg"), tr("Close All"), this);
-    QAction* sortAssembliesAction = new QAction(QIcon(":/sort_action.svg"), tr("Sort Assemblies"), this);
+    connect(ui->closeAllAction, &QAction::triggered, this, &MainWindow::closeAssemblies);
+    connect(ui->openAction, &QAction::triggered, this, &MainWindow::openAssemblies);
+    connect(ui->reloadAllAction, &QAction::triggered, this, &MainWindow::reloadAssemblies);
+    connect(ui->sortAssembliesAction, &QAction::triggered, this, &MainWindow::sortAssemblies);
 
-    QAction* undoAction = new QAction(QIcon(":/undo_action.svg"), tr("Undo"), this);
-    QAction* redoAction = new QAction(QIcon(":/redo_action.svg"), tr("Redo"), this);
-    QAction* findAction = new QAction(QIcon(":/find_action.svg"), tr("Find"), this);
-    QAction* searchAssembliesAction = new QAction(QIcon(":/find_action.svg"), tr("Search Assemblies"), this);
+    connect(ui->findAction, &QAction::triggered, this, &MainWindow::findInEditor);
+    connect(ui->redoAction, &QAction::triggered, this, &MainWindow::redoInEditor);
+    connect(ui->searchAssembliesAction, &QAction::triggered, this, &MainWindow::searchAssemblies);
+    connect(ui->undoAction, &QAction::triggered, this, &MainWindow::undoInEditor);
 
-    QAction* wordWrapAction = new QAction(QIcon(":/word_wrap_action.svg"), tr("Word Wrap"), this);
-    QAction* fullScreenAction = new QAction(QIcon(":/fullscreen_action.svg"), tr("Full Screen"), this);
-    QAction* collapseTreeNodesAction = new QAction(QIcon(":/collapse_action.svg"), tr("Collapse Tree Nodes"), this);
-    QAction* optionsAction = new QAction(QIcon(":/options_action.svg"), tr("Options..."), this);
+    connect(ui->collapseTreeNodesAction, &QAction::triggered, this, &MainWindow::collapseTreeNodes);
+    connect(ui->fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
+    connect(ui->optionsAction, &QAction::triggered, this, &MainWindow::openOptionsWindow);
+    connect(ui->wordWrapAction, &QAction::triggered, this, &MainWindow::toggleWordWrap);
 
-    QAction* sourceCodeAction = new QAction(tr("Source Code"), this);
-    QAction* aboutAction = new QAction(tr("About"), this);
-
-    QMenu* fileMenu = menuBar()->addMenu(tr("File"));
-    fileMenu->addAction(openAction);
-    fileMenu->addAction(reloadAllAction);
-    fileMenu->addAction(closeAllAction);
-    fileMenu->addAction(sortAssembliesAction);
-
-    QMenu* editMenu = menuBar()->addMenu(tr("Edit"));
-    editMenu->addAction(undoAction);
-    editMenu->addAction(redoAction);
-    editMenu->addSeparator();
-    editMenu->addAction(findAction);
-    editMenu->addAction(searchAssembliesAction);
-
-    QMenu* viewMenu = menuBar()->addMenu(tr("View"));
-    viewMenu->addAction(wordWrapAction);
-    viewMenu->addAction(fullScreenAction);
-    viewMenu->addAction(collapseTreeNodesAction);
-    viewMenu->addSeparator();
-    viewMenu->addAction(optionsAction);
-
-    QMenu* helpMenu = menuBar()->addMenu(tr("Help"));
-    helpMenu->addAction(sourceCodeAction);
-    helpMenu->addAction(aboutAction);
-
-    connect(closeAllAction, &QAction::triggered, this, &MainWindow::closeAssemblies);
-    connect(openAction, &QAction::triggered, this, &MainWindow::openAssemblies);
-    connect(reloadAllAction, &QAction::triggered, this, &MainWindow::reloadAssemblies);
-    connect(sortAssembliesAction, &QAction::triggered, this, &MainWindow::sortAssemblies);
-
-    connect(findAction, &QAction::triggered, this, &MainWindow::findInEditor);
-    connect(redoAction, &QAction::triggered, this, &MainWindow::redoInEditor);
-    connect(searchAssembliesAction, &QAction::triggered, this, &MainWindow::searchAssemblies);
-    connect(undoAction, &QAction::triggered, this, &MainWindow::undoInEditor);
-
-    connect(collapseTreeNodesAction, &QAction::triggered, this, &MainWindow::collapseTreeNodes);
-    connect(fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
-    connect(optionsAction, &QAction::triggered, this, &MainWindow::openOptionsWindow);
-    connect(wordWrapAction, &QAction::triggered, this, &MainWindow::toggleWordWrap);
-
-    connect(sourceCodeAction, &QAction::triggered, this, &MainWindow::goToRepo);
-    connect(aboutAction, &QAction::triggered, this, &MainWindow::openAboutWindow);
+    connect(ui->sourceCodeAction, &QAction::triggered, this, &MainWindow::goToRepo);
+    connect(ui->aboutAction, &QAction::triggered, this, &MainWindow::openAboutWindow);
 
     connect(ui->csVersionCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
     connect(ui->languageCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
