@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "interface.h"
+#include "languagemapping.h"
 #include "richtextitemdelegate.h"
 #include "widgets/assemblytreeitem.h"
 #include "widgets/codeeditor/codeeditordefinitions.h"
@@ -81,7 +82,9 @@ MainWindow::MainWindow(QWidget* parent)
     connect(sourceCodeAction, &QAction::triggered, this, &MainWindow::goToRepo);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::openAboutWindow);
 
-    connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainWindow::handleItemDoubleClick);
+    connect(ui->csVersionCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
+    connect(ui->languageCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
+    connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainWindow::treeItemDoubleClicked);
 }
 
 MainWindow::~MainWindow()
@@ -207,7 +210,13 @@ void MainWindow::openAboutWindow()
 
 }
 
-void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
+void MainWindow::comboBoxChanged(int)
+{
+    ui->csVersionCombo->setVisible(ui->languageCombo->currentText() == "C#");
+    treeItemDoubleClicked(ui->treeWidget->currentItem(), 0);
+}
+
+void MainWindow::treeItemDoubleClicked(QTreeWidgetItem* item, int)
 {
     if (const TypeTreeItem* typeItem = dynamic_cast<TypeTreeItem*>(item))
     {
@@ -222,8 +231,13 @@ void MainWindow::handleItemDoubleClick(QTreeWidgetItem* item, int)
             return;
         }
 
-        ui->codeEditor->setText(
-            Interface::decompileType(asmParentItem->path(), typeItem->handle(), asmParentItem->probingPaths()),
-            CodeEditor::DisplayLanguage::CSharp);
+        DecompilationInfo decompInfo = {
+            .assemblyPath = asmParentItem->path(),
+            .csVersion = CSVersionMap[ui->csVersionCombo->currentText()],
+            .language = DisplayLanguageMap[ui->languageCombo->currentText()],
+            .referenceDirs = asmParentItem->probingPaths()
+        };
+
+        ui->codeEditor->setText(Interface::decompileType(typeItem->handle(), decompInfo), decompInfo.language);
     }
 }

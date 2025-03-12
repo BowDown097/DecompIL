@@ -4,7 +4,7 @@
 
 KSyntaxHighlighting::Definition& CodeEditorDefinitions::CILDefinition()
 {
-    static KSyntaxHighlighting::Definition def = repository().definitionForName("CIL");
+    static KSyntaxHighlighting::Definition def = repository().definitionForName("Common Intermediate Language (CIL)");
     return def;
 }
 

@@ -41,5 +41,6 @@ private slots:
     void goToRepo();
     void openAboutWindow();
 
-    void handleItemDoubleClick(QTreeWidgetItem* item, int);
+    void comboBoxChanged(int);
+    void treeItemDoubleClicked(QTreeWidgetItem* item, int);
 };

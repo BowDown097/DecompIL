@@ -2,6 +2,7 @@ global using DotnetBinaryInterface.AssemblyTypes;
 global using DotnetBinaryInterface.MarshalTypes;
 global using ICSharpCode.Decompiler;
 global using ICSharpCode.Decompiler.CSharp;
+global using ICSharpCode.Decompiler.Disassembler;
 global using ICSharpCode.Decompiler.Metadata;
 global using ICSharpCode.Decompiler.TypeSystem;
 global using System.Diagnostics.CodeAnalysis;

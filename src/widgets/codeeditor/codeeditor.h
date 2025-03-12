@@ -5,6 +5,7 @@
 */
 
 #pragma once
+#include "interface_types/marshal/decompilationinfo.h"
 #include <QPlainTextEdit>
 
 namespace KSyntaxHighlighting { class Definition; class SyntaxHighlighter; class Theme; }
@@ -16,8 +17,6 @@ class CodeEditor : public QPlainTextEdit
     Q_OBJECT
     friend class CodeEditorSidebar;
 public:
-    enum class DisplayLanguage { CIL, CSharp };
-
     explicit CodeEditor(QWidget* parent = nullptr);
     void setText(const QString& text, DisplayLanguage language);
 protected:

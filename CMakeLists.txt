@@ -52,10 +52,12 @@ set(SOURCE_FILES
 
 set(HEADERS
     src/interface.h
+    src/languagemapping.h
     src/libraryhandle.h
     src/mainwindow.h
     src/richtextitemdelegate.h
     src/uiutils.h
+    src/interface_types/marshal/decompilationinfo.h
     src/interface_types/marshal/marshalexception.h
     src/interface_types/marshal/marshalexpected.h
     src/interface_types/marshal/marshallist.h
