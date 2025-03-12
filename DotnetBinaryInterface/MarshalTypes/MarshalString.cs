@@ -12,8 +12,8 @@ public readonly unsafe struct MarshalString
         {
             _length = managedString.Length;
 
-            int nb = (_length + 1) * 2;
-            _data = (char*)Marshal.AllocHGlobal(nb);
+            nuint nb = (nuint)((_length + 1) * 2);
+            _data = (char*)NativeMemory.Alloc(nb);
             managedString.CopyTo(new Span<char>(_data, _length));
             _data[_length] = '\0';
         }

@@ -15,7 +15,7 @@ public unsafe struct MarshalList<T> where T : unmanaged
     public MarshalList(int capacity)
     {
         _capacity = capacity;
-        _data = (T*)Marshal.AllocHGlobal(capacity * sizeof(T));
+        _data = (T*)NativeMemory.Alloc((nuint)capacity, (nuint)sizeof(T));
     }
 
     public T this[int index]
@@ -53,11 +53,11 @@ public unsafe struct MarshalList<T> where T : unmanaged
         if (capacity <= _capacity)
             return;
 
-        int reserve = capacity * sizeof(T);
+        nuint reserve = (nuint)(capacity * sizeof(T));
         if (_capacity > 0)
-            _data = (T*)Marshal.ReAllocHGlobal((nint)_data, reserve);
+            _data = (T*)NativeMemory.Realloc(_data, reserve);
         else
-            _data = (T*)Marshal.AllocHGlobal(reserve);
+            _data = (T*)NativeMemory.Alloc(reserve);
 
         _capacity = capacity;
     }

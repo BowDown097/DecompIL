@@ -2,11 +2,10 @@ namespace DotnetBinaryInterface;
 
 internal static class Utils
 {
-    internal static unsafe T* StructureToPtr<T>([DisallowNull] T structure, bool fDeleteOld = false)
-        where T : unmanaged
+    internal static unsafe T* StructureToPtr<T>([DisallowNull] T structure) where T : unmanaged
     {
-        T* _ptr = (T*)Marshal.AllocHGlobal(sizeof(T));
-        Marshal.StructureToPtr(structure, (nint)_ptr, fDeleteOld);
+        T* _ptr = (T*)NativeMemory.Alloc((nuint)sizeof(T));
+        Unsafe.Write(_ptr, structure);
         return _ptr;
     }
 }

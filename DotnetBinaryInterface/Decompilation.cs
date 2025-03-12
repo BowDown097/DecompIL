@@ -1,13 +1,6 @@
 namespace DotnetBinaryInterface;
 
-// we need to make a wrapper struct because StructureToPtr
-// does not accept generic structs but will accept
-// wrappers around them just fine. wonderful.
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public readonly struct GetAssemblyResult(MarshalExpected<AssemblyInfo, MarshalException> data)
-{
-    public readonly MarshalExpected<AssemblyInfo, MarshalException> _data = data;
-}
+using GetAssemblyResult = MarshalExpected<AssemblyInfo, MarshalException>;
 
 public static unsafe class Decompilation
 {
@@ -59,11 +52,11 @@ public static unsafe class Decompilation
             using FileStream assemblyStream = File.OpenRead(assemblyPath);
             using PEReader peReader = new(assemblyStream);
 
-            return Utils.StructureToPtr(new GetAssemblyResult(new AssemblyInfo(peReader)));
+            return Utils.StructureToPtr<GetAssemblyResult>(new AssemblyInfo(peReader));
         }
         catch (Exception e)
         {
-            return Utils.StructureToPtr(new GetAssemblyResult(new MarshalException(e)));
+            return Utils.StructureToPtr<GetAssemblyResult>(new MarshalException(e));
         }
     }
 }
