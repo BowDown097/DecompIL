@@ -10,8 +10,9 @@ void SettingsStore::initialize()
 
     appStyle = settings.value("appStyle", "Default").toString();
     darkTheme = settings.value("darkTheme", false).toBool();
-    implicitUsings = settings.value("implicitUsings", false).toBool();
-    stripILWarnings = settings.value("stripILWarnings", true).toBool();
+
+    implicitUsings = settings.value("cs/implicitUsings", false).toBool();
+    stripILWarnings = settings.value("cs/stripILWarnings", true).toBool();
 
     editorFont = settings.value("editor/font", QFontDatabase::systemFont(QFontDatabase::FixedFont).toString()).toString();
     editorTabWidth = settings.value("editor/tabWidth", 4).toInt();
@@ -24,8 +25,9 @@ void SettingsStore::save()
 
     settings.setValue("appStyle", appStyle);
     settings.setValue("darkTheme", darkTheme);
-    settings.setValue("implicitUsings", implicitUsings);
-    settings.setValue("stripILWarnings", stripILWarnings);
+
+    settings.setValue("cs/implicitUsings", implicitUsings);
+    settings.setValue("cs/stripILWarnings", stripILWarnings);
 
     settings.setValue("editor/font", editorFont);
     settings.setValue("editor/tabWidth", editorTabWidth);

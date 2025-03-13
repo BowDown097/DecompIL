@@ -50,7 +50,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>116</height>
+            <height>48</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -75,26 +75,6 @@
            <property name="bottomMargin">
             <number>10</number>
            </property>
-           <item>
-            <widget class="QCheckBox" name="implicitUsings">
-             <property name="toolTip">
-              <string>Commonly enabled feature of .NET 6+ projects that makes using directives for the most common namespaces unnecessary.</string>
-             </property>
-             <property name="text">
-              <string>Enable implicit usings</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="stripILWarnings">
-             <property name="toolTip">
-              <string>Conversion from IL to C# will sometimes produce warnings, but these typically are irrelevant to the user and don't affect the resulting code.</string>
-             </property>
-             <property name="text">
-              <string>Strip IL warnings</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <property name="spacing">
@@ -188,7 +168,7 @@
             <number>10</number>
            </property>
            <property name="rightMargin">
-            <number>10</number>
+            <number>0</number>
            </property>
            <property name="bottomMargin">
             <number>10</number>
@@ -297,6 +277,88 @@
               </spacer>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="csharp">
+      <attribute name="title">
+       <string>C#</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QScrollArea" name="scrollArea_3">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_3">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>376</width>
+            <height>78</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="spacing">
+            <number>10</number>
+           </property>
+           <property name="leftMargin">
+            <number>10</number>
+           </property>
+           <property name="topMargin">
+            <number>10</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>10</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="implicitUsings">
+             <property name="toolTip">
+              <string>Commonly enabled feature of .NET 6+ projects that makes using directives for the most common namespaces unnecessary.</string>
+             </property>
+             <property name="text">
+              <string>Enable implicit usings</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="stripILWarnings">
+             <property name="toolTip">
+              <string>Conversion from IL to C# will sometimes produce warnings, but these typically are irrelevant to the user and don't affect the resulting code.</string>
+             </property>
+             <property name="text">
+              <string>Strip IL warnings</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
