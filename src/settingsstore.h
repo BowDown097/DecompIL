@@ -15,6 +15,7 @@ public:
     int editorTabWidth;
     QString editorTheme;
     bool implicitUsings;
+    bool stripILWarnings;
 
     void initialize();
     void save();

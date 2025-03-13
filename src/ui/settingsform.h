@@ -23,6 +23,6 @@ private slots:
     void enableSaveButton();
     void fillFromSettings();
     void promptFontChange();
-    void revertChanges();
+    void revertLiveChanges();
     void saveSettings();
 };

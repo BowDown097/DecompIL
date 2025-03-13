@@ -18,18 +18,35 @@ namespace StringUtils
             "System.Threading.Tasks"
         };
 
-        qsizetype pos{};
-        QString line;
-
         while (!stream.atEnd())
         {
-            pos = stream.pos();
-            line = stream.readLine();
+            qsizetype pos = stream.pos();
+            QString line = stream.readLine();
 
             if (!line.startsWith("using "))
                 break;
 
             if (std::ranges::any_of(ImplicitUsings, [&line](const QString& u) { return line == "using " + u + ';'; }))
+            {
+                str.remove(pos, line.length() + 1);
+                stream.seek(pos);
+            }
+        }
+
+        trimFront(str);
+    }
+
+    void stripILWarnings(QString& str)
+    {
+        QTextStream stream(&str);
+
+        while (!stream.atEnd())
+        {
+            qsizetype pos = stream.pos();
+            QString line = stream.readLine();
+
+            auto it = std::ranges::find_if_not(line, [](QChar c) { return c.isSpace(); });
+            if (QStringView sv(it, line.cend()); sv.startsWith(QLatin1String("//IL_")))
             {
                 str.remove(pos, line.length() + 1);
                 stream.seek(pos);

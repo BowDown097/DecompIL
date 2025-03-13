@@ -67,7 +67,7 @@ void SettingsForm::closeEvent(QCloseEvent* event)
         if (unsavedResponse == QMessageBox::Yes)
             saveSettings();
         else
-            revertChanges();
+            revertLiveChanges();
     }
 
     QWidget::closeEvent(event);
@@ -86,6 +86,7 @@ void SettingsForm::fillFromSettings()
     ui->appStyle->setCurrentIndex(ui->appStyle->findText(store.appStyle));
     ui->darkTheme->setChecked(store.darkTheme);
     ui->implicitUsings->setChecked(store.implicitUsings);
+    ui->stripILWarnings->setChecked(store.stripILWarnings);
 
     QFont font;
     font.fromString(store.editorFont);
@@ -120,7 +121,7 @@ void SettingsForm::promptFontChange()
     }
 }
 
-void SettingsForm::revertChanges()
+void SettingsForm::revertLiveChanges()
 {
     SettingsStore& store = decompILApp->settings();
     UIUtils::setAppStyle(store.appStyle, store.darkTheme);
@@ -144,6 +145,7 @@ void SettingsForm::saveSettings()
     store.editorTabWidth = ui->editorTabWidthSpin->value();
     store.editorTheme = ui->editorThemeCombo->currentData().toString();
     store.implicitUsings = ui->implicitUsings->isChecked();
+    store.stripILWarnings = ui->stripILWarnings->isChecked();
 
     store.save();
     store.initialize();

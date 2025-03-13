@@ -203,9 +203,14 @@ void MainWindow::treeItemDoubleClicked(QTreeWidgetItem* item, int)
 
         if (QString code = Interface::decompileType(typeItem->handle(), decompInfo); !code.isEmpty())
         {
-            if (decompInfo.language == DisplayLanguage::CSharp && decompILApp->settings().implicitUsings)
-                StringUtils::applyImplicitUsings(code);
-            StringUtils::trimFront(code);
+            if (decompInfo.language == DisplayLanguage::CSharp)
+            {
+                if (decompILApp->settings().implicitUsings)
+                    StringUtils::applyImplicitUsings(code);
+                if (decompILApp->settings().stripILWarnings)
+                    StringUtils::stripILWarnings(code);
+            }
+
             ui->codeEditor->setText(code, decompInfo.language);
         }
     }

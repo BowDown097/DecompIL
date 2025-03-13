@@ -50,7 +50,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>82</height>
+            <height>116</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -77,8 +77,21 @@
            </property>
            <item>
             <widget class="QCheckBox" name="implicitUsings">
+             <property name="toolTip">
+              <string>Commonly enabled feature of .NET 6+ projects that makes using directives for the most common namespaces unnecessary.</string>
+             </property>
              <property name="text">
               <string>Enable implicit usings</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="stripILWarnings">
+             <property name="toolTip">
+              <string>Conversion from IL to C# will sometimes produce warnings, but these typically are irrelevant to the user and don't affect the resulting code.</string>
+             </property>
+             <property name="text">
+              <string>Strip IL warnings</string>
              </property>
             </widget>
            </item>
