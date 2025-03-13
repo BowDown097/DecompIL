@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "decompilapplication.h"
 #include "ui_mainwindow.h"
 #include "interface/interface.h"
 #include "languagemapping.h"
@@ -8,6 +9,7 @@
 #include "ui/widgets/codeeditor/codeeditordefinitions.h"
 #include "ui/widgets/findbar.h"
 #include "ui/widgets/typetreeitem.h"
+#include "utils/stringutils.h"
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMenuBar>
@@ -199,6 +201,12 @@ void MainWindow::treeItemDoubleClicked(QTreeWidgetItem* item, int)
             .referenceDirs = asmParentItem->probingPaths()
         };
 
-        ui->codeEditor->setText(Interface::decompileType(typeItem->handle(), decompInfo), decompInfo.language);
+        if (QString code = Interface::decompileType(typeItem->handle(), decompInfo); !code.isEmpty())
+        {
+            if (decompInfo.language == DisplayLanguage::CSharp && decompILApp->settings().implicitUsings)
+                StringUtils::applyImplicitUsings(code);
+            StringUtils::trimFront(code);
+            ui->codeEditor->setText(code, decompInfo.language);
+        }
     }
 }

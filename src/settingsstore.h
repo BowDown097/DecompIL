@@ -14,6 +14,7 @@ public:
     QString editorFont;
     int editorTabWidth;
     QString editorTheme;
+    bool implicitUsings;
 
     void initialize();
     void save();

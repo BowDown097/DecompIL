@@ -51,6 +51,7 @@ set(SOURCE_FILES
     src/ui/widgets/codeeditor/codeeditor.cpp
     src/ui/widgets/codeeditor/codeeditordefinitions.cpp
     src/ui/widgets/codeeditor/codeeditorsidebar.cpp
+    src/utils/stringutils.cpp
     src/utils/uiutils.cpp)
 
 set(HEADERS
@@ -90,6 +91,7 @@ set(HEADERS
     src/ui/widgets/codeeditor/codeeditor.h
     src/ui/widgets/codeeditor/codeeditordefinitions.h
     src/ui/widgets/codeeditor/codeeditorsidebar.h
+    src/utils/stringutils.h
     src/utils/uiutils.h
     src/utils/views_concat/concat.hpp
     src/utils/views_concat/utils.hpp)

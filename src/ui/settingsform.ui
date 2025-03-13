@@ -50,7 +50,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>48</height>
+            <height>82</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -75,6 +75,13 @@
            <property name="bottomMargin">
             <number>10</number>
            </property>
+           <item>
+            <widget class="QCheckBox" name="implicitUsings">
+             <property name="text">
+              <string>Enable implicit usings</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <property name="spacing">

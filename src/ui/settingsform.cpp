@@ -85,6 +85,7 @@ void SettingsForm::fillFromSettings()
     ui->appStyle->addItems(QStyleFactory::keys());
     ui->appStyle->setCurrentIndex(ui->appStyle->findText(store.appStyle));
     ui->darkTheme->setChecked(store.darkTheme);
+    ui->implicitUsings->setChecked(store.implicitUsings);
 
     QFont font;
     font.fromString(store.editorFont);
@@ -142,6 +143,7 @@ void SettingsForm::saveSettings()
     store.editorFont = ui->editorFontDisplayLabel->font().toString();
     store.editorTabWidth = ui->editorTabWidthSpin->value();
     store.editorTheme = ui->editorThemeCombo->currentData().toString();
+    store.implicitUsings = ui->implicitUsings->isChecked();
 
     store.save();
     store.initialize();

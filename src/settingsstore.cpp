@@ -9,6 +9,7 @@ void SettingsStore::initialize()
     QSettings settings(configPath, QSettings::IniFormat);
     appStyle = settings.value("appStyle", "Default").toString();
     darkTheme = settings.value("darkTheme", false).toBool();
+    implicitUsings = settings.value("implicitUsings", false).toBool();
     editorFont = settings.value("editor/font", QFontDatabase::systemFont(QFontDatabase::FixedFont).toString()).toString();
     editorTabWidth = settings.value("editor/tabWidth", 4).toInt();
     editorTheme = settings.value("editor/theme", CodeEditorDefinitions::defaultTheme().translatedName()).toString();
@@ -19,6 +20,7 @@ void SettingsStore::save()
     QSettings settings(configPath, QSettings::IniFormat);
     settings.setValue("appStyle", appStyle);
     settings.setValue("darkTheme", darkTheme);
+    settings.setValue("implicitUsings", implicitUsings);
     settings.setValue("editor/font", editorFont);
     settings.setValue("editor/tabWidth", editorTabWidth);
     settings.setValue("editor/theme", editorTheme);
