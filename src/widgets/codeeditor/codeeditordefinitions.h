@@ -3,7 +3,7 @@
 #include <QList>
 #include <set>
 
-namespace KSyntaxHighlighting { class Definition; class Repository; }
+namespace KSyntaxHighlighting { class Definition; class Repository; class Theme; }
 
 class CodeEditorDefinitions
 {
@@ -12,6 +12,9 @@ public:
     using TypeRange = std::ranges::subrange<
         std::set<NativeTypes::AssemblyTypeMetadata>::iterator,
         std::set<NativeTypes::AssemblyTypeMetadata>::iterator>;
+
+    static KSyntaxHighlighting::Theme defaultTheme();
+    static QList<KSyntaxHighlighting::Theme> themes();
 
     static void addTypes(const QList<NativeTypes::AssemblyTypeMetadata>& types);
     static void removeTypes(const QList<NativeTypes::AssemblyTypeMetadata>& types);

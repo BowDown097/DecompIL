@@ -5,7 +5,7 @@
 class TypeTreeItem : public QTreeWidgetItem
 {
 public:
-    TypeTreeItem(const NativeTypes::AssemblyTypeMetadata& metadata, QTreeWidget* treeview = nullptr);
+    explicit TypeTreeItem(const NativeTypes::AssemblyTypeMetadata& metadata, QTreeWidget* treeview = nullptr);
     TypeDefinitionHandle handle() const { return m_handle; }
 private:
     TypeDefinitionHandle m_handle;

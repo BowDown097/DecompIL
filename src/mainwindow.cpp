@@ -3,6 +3,7 @@
 #include "interface.h"
 #include "languagemapping.h"
 #include "richtextitemdelegate.h"
+#include "settingsform.h"
 #include "widgets/assemblytreeitem.h"
 #include "widgets/codeeditor/codeeditordefinitions.h"
 #include "widgets/findbar.h"
@@ -16,10 +17,11 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    findBar = new FindBar(ui->codeEditor);
+
+    m_codeEditor = ui->codeEditor;
+    m_findBar = new FindBar(ui->codeEditor);
 
     setWindowTitle(DECOMPIL_APP_NAME " v" DECOMPIL_VERSION_NAME);
-    ui->codeEditor->setTabStopDistance(ui->codeEditor->fontMetrics().horizontalAdvance(' ') * 4);
     ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
 
     connect(ui->closeAllAction, &QAction::triggered, this, &MainWindow::closeAssemblies);
@@ -34,7 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(ui->collapseTreeNodesAction, &QAction::triggered, this, &MainWindow::collapseTreeNodes);
     connect(ui->fullScreenAction, &QAction::triggered, this, &MainWindow::toggleFullScreen);
-    connect(ui->optionsAction, &QAction::triggered, this, &MainWindow::openOptionsWindow);
+    connect(ui->optionsAction, &QAction::triggered, this, &MainWindow::openSettingsForm);
     connect(ui->wordWrapAction, &QAction::triggered, this, &MainWindow::toggleWordWrap);
 
     connect(ui->sourceCodeAction, &QAction::triggered, this, &MainWindow::goToRepo);
@@ -116,7 +118,7 @@ void MainWindow::sortAssemblies()
 
 void MainWindow::findInEditor()
 {
-    findBar->setReveal(findBar->isHidden());
+    m_findBar->setReveal(m_findBar->isHidden());
 }
 
 void MainWindow::redoInEditor()
@@ -139,9 +141,10 @@ void MainWindow::collapseTreeNodes()
     ui->treeWidget->collapseAll();
 }
 
-void MainWindow::openOptionsWindow()
+void MainWindow::openSettingsForm()
 {
-
+    SettingsForm* form = new SettingsForm;
+    form->show();
 }
 
 void MainWindow::toggleFullScreen()

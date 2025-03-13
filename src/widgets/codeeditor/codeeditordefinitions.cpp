@@ -1,6 +1,9 @@
 #include "codeeditordefinitions.h"
 #include <KSyntaxHighlighting/Definition>
 #include <KSyntaxHighlighting/Repository>
+#include <KSyntaxHighlighting/Theme>
+#include <QApplication>
+#include <QPalette>
 
 KSyntaxHighlighting::Definition& CodeEditorDefinitions::CILDefinition()
 {
@@ -26,10 +29,22 @@ QStringList& CodeEditorDefinitions::CSharpTypeList()
     return list;
 }
 
+KSyntaxHighlighting::Theme CodeEditorDefinitions::defaultTheme()
+{
+    return qApp->palette().color(QPalette::Base).lightness() < 128
+        ? repository().defaultTheme(KSyntaxHighlighting::Repository::DarkTheme)
+        : repository().defaultTheme(KSyntaxHighlighting::Repository::LightTheme);
+}
+
 const KSyntaxHighlighting::Repository& CodeEditorDefinitions::repository()
 {
     static KSyntaxHighlighting::Repository repo;
     return repo;
+}
+
+QList<KSyntaxHighlighting::Theme> CodeEditorDefinitions::themes()
+{
+    return repository().themes();
 }
 
 void CodeEditorDefinitions::addType(const NativeTypes::AssemblyTypeMetadata& type)

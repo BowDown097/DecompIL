@@ -37,11 +37,14 @@ if(APPLE)
 endif()
 
 set(SOURCE_FILES
+    src/decompilapplication.cpp
     src/interface.cpp
     src/libraryhandle.cpp
     src/main.cpp
     src/mainwindow.cpp
     src/richtextitemdelegate.cpp
+    src/settingsform.cpp
+    src/settingsstore.cpp
     src/uiutils.cpp
     src/widgets/assemblytreeitem.cpp
     src/widgets/findbar.cpp
@@ -51,11 +54,14 @@ set(SOURCE_FILES
     src/widgets/codeeditor/codeeditorsidebar.cpp)
 
 set(HEADERS
+    src/decompilapplication.h
     src/interface.h
     src/languagemapping.h
     src/libraryhandle.h
     src/mainwindow.h
     src/richtextitemdelegate.h
+    src/settingsform.h
+    src/settingsstore.h
     src/uiutils.h
     src/interface_types/marshal/decompilationinfo.h
     src/interface_types/marshal/marshalexception.h
@@ -90,6 +96,7 @@ set(HEADERS
 
 set(FORMS
     src/mainwindow.ui
+    src/settingsform.ui
     src/widgets/findbar.ui)
 
 if(WIN32)

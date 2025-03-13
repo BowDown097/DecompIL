@@ -18,7 +18,9 @@ class CodeEditor : public QPlainTextEdit
     friend class CodeEditorSidebar;
 public:
     explicit CodeEditor(QWidget* parent = nullptr);
+    void setTabWidth(int width);
     void setText(const QString& text, DisplayLanguage language);
+    void setTheme(const KSyntaxHighlighting::Theme& theme);
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
@@ -27,7 +29,6 @@ private:
     CodeEditorSidebar* m_sideBar;
 
     void highlightCurrentLine();
-    void setTheme(const KSyntaxHighlighting::Theme& theme);
 
     void sidebarPaintEvent(QPaintEvent* event);
     int sidebarWidth() const;

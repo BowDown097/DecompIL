@@ -7,6 +7,7 @@
 #include "codeeditor.h"
 #include "codeeditordefinitions.h"
 #include "codeeditorsidebar.h"
+#include "decompilapplication.h"
 #include <KSyntaxHighlighting/Repository>
 #include <KSyntaxHighlighting/SyntaxHighlighter>
 #include <KSyntaxHighlighting/Theme>
@@ -19,11 +20,12 @@ CodeEditor::CodeEditor(QWidget* parent)
       m_highlighter(new KSyntaxHighlighting::SyntaxHighlighter(document())),
       m_sideBar(new CodeEditorSidebar(this))
 {
-    setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+    QFont font;
+    font.fromString(decompILApp->settings().editorFont);
 
-    setTheme(palette().color(QPalette::Base).lightness() < 128
-        ? CodeEditorDefinitions::repository().defaultTheme(KSyntaxHighlighting::Repository::DarkTheme)
-        : CodeEditorDefinitions::repository().defaultTheme(KSyntaxHighlighting::Repository::LightTheme));
+    setFont(font);
+    setTabWidth(decompILApp->settings().editorTabWidth);
+    setTheme(CodeEditorDefinitions::repository().theme(decompILApp->settings().editorTheme));
 
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::updateSidebarGeometry);
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::updateSidebarArea);
@@ -33,6 +35,11 @@ CodeEditor::CodeEditor(QWidget* parent)
     highlightCurrentLine();
 }
 
+void CodeEditor::setTabWidth(int width)
+{
+    setTabStopDistance(fontMetrics().horizontalAdvance(' ') * width);
+}
+
 void CodeEditor::setText(const QString& text, DisplayLanguage language)
 {
     clear();
@@ -40,6 +47,21 @@ void CodeEditor::setText(const QString& text, DisplayLanguage language)
         ? CodeEditorDefinitions::CSharpDefinition()
         : CodeEditorDefinitions::CILDefinition());
     setPlainText(text);
+}
+
+void CodeEditor::setTheme(const KSyntaxHighlighting::Theme& theme)
+{
+    if (theme.isValid())
+    {
+        QPalette pal = qApp->palette();
+        pal.setColor(QPalette::Base, theme.editorColor(KSyntaxHighlighting::Theme::BackgroundColor));
+        pal.setColor(QPalette::Highlight, theme.editorColor(KSyntaxHighlighting::Theme::TextSelection));
+        setPalette(pal);
+    }
+
+    m_highlighter->setTheme(theme);
+    m_highlighter->rehighlight();
+    highlightCurrentLine();
 }
 
 void CodeEditor::contextMenuEvent(QContextMenuEvent* event)
@@ -89,21 +111,6 @@ void CodeEditor::highlightCurrentLine()
     QList<QTextEdit::ExtraSelection> extraSelections;
     extraSelections.append(selection);
     setExtraSelections(extraSelections);
-}
-
-void CodeEditor::setTheme(const KSyntaxHighlighting::Theme& theme)
-{
-    if (theme.isValid())
-    {
-        QPalette pal = qApp->palette();
-        pal.setColor(QPalette::Base, theme.editorColor(KSyntaxHighlighting::Theme::BackgroundColor));
-        pal.setColor(QPalette::Highlight, theme.editorColor(KSyntaxHighlighting::Theme::TextSelection));
-        setPalette(pal);
-    }
-
-    m_highlighter->setTheme(theme);
-    m_highlighter->rehighlight();
-    highlightCurrentLine();
 }
 
 void CodeEditor::sidebarPaintEvent(QPaintEvent* event)

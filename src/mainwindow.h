@@ -17,8 +17,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
+
+    static CodeEditor* codeEditor() { return m_codeEditor; }
 private:
-    FindBar* findBar;
+    inline static CodeEditor* m_codeEditor;
+    FindBar* m_findBar;
     Ui::MainWindow* ui;
 
     void openAssembly(const QString& path);
@@ -34,7 +37,7 @@ private slots:
     void undoInEditor();
 
     void collapseTreeNodes();
-    void openOptionsWindow();
+    void openSettingsForm();
     void toggleFullScreen();
     void toggleWordWrap();
 
