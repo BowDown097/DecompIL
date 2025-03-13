@@ -1,8 +1,8 @@
 #include "settingsform.h"
 #include "ui_settingsform.h"
 #include "decompilapplication.h"
-#include "uiutils.h"
 #include "mainwindow.h"
+#include "utils/uiutils.h"
 #include "widgets/codeeditor/codeeditor.h"
 #include "widgets/codeeditor/codeeditordefinitions.h"
 #include <KSyntaxHighlighting/Repository>

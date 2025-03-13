@@ -1,5 +1,5 @@
 #pragma once
-#include "interface_types/marshal/decompilationinfo.h"
+#include "interface/types/marshal/decompilationinfo.h"
 #include <QHash>
 
 static QHash<QString, LanguageVersion> CSVersionMap = {

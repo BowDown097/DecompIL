@@ -1,5 +1,5 @@
 #pragma once
-#include "interface_types/native/assemblytypemetadata.h"
+#include "interface/types/native/assemblytypemetadata.h"
 #include <QTreeWidgetItem>
 
 class TypeTreeItem : public QTreeWidgetItem

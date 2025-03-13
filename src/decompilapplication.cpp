@@ -1,5 +1,5 @@
 #include "decompilapplication.h"
-#include "uiutils.h"
+#include "utils/uiutils.h"
 #include <QStyle>
 
 DecompILApplication::DecompILApplication(int& argc, char** argv)

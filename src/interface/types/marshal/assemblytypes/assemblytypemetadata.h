@@ -1,6 +1,6 @@
 #pragma once
-#include "interface_types/marshal/marshallist.h"
-#include "interface_types/marshal/marshalstring.h"
+#include "interface/types/marshal/marshallist.h"
+#include "interface/types/marshal/marshalstring.h"
 #include "shared.h"
 
 enum class TypeKind { Class, Delegate, Enum, Interface, Struct };

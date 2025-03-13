@@ -1,5 +1,5 @@
 #include "typetreeitem.h"
-#include "uiutils.h"
+#include "utils/uiutils.h"
 
 TypeTreeItem::TypeTreeItem(const NativeTypes::AssemblyTypeMetadata& metadata, QTreeWidget* treeview)
     : QTreeWidgetItem(treeview), m_handle(metadata.handle)

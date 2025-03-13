@@ -1,6 +1,6 @@
 #pragma once
-#include "interface_types/native/assemblymetadata.h"
-#include "interface_types/native/assemblytypemetadata.h"
+#include "interface/types/native/assemblymetadata.h"
+#include "interface/types/native/assemblytypemetadata.h"
 #include <QFileInfo>
 #include <QTreeWidgetItem>
 

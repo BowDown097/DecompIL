@@ -1,6 +1,5 @@
 #pragma once
-#include "interface_types/native/assemblytypemetadata.h"
-#include <QList>
+#include "interface/types/native/assemblytypemetadata.h"
 #include <set>
 
 namespace KSyntaxHighlighting { class Definition; class Repository; class Theme; }

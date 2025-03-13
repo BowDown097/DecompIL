@@ -1,5 +1,5 @@
 #pragma once
-#include "interface_types/marshal/marshalstring.h"
+#include "interface/types/marshal/marshalstring.h"
 #include "shared.h"
 
 namespace MarshalTypes

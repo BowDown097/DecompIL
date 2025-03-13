@@ -1,8 +1,8 @@
 #pragma once
-#include "interface_types/marshal/decompilationinfo.h"
-#include "interface_types/marshal/marshalexception.h"
-#include "interface_types/marshal/marshalexpected.h"
-#include "interface_types/native/assemblyinfo.h"
+#include "types/marshal/decompilationinfo.h"
+#include "types/marshal/marshalexception.h"
+#include "types/marshal/marshalexpected.h"
+#include "types/native/assemblyinfo.h"
 
 class Interface
 {

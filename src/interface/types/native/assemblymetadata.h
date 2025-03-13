@@ -1,6 +1,6 @@
 #pragma once
 #include "assemblycommonattributes.h"
-#include "interface_types/marshal/assemblytypes/assemblymetadata.h"
+#include "interface/types/marshal/assemblytypes/assemblymetadata.h"
 
 namespace NativeTypes
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "interface_types/marshal/assemblytypes/assemblycommonattributes.h"
+#include "interface/types/marshal/assemblytypes/assemblycommonattributes.h"
 
 namespace NativeTypes
 {

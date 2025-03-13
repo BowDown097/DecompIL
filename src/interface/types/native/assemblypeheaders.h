@@ -1,6 +1,6 @@
 #pragma once
 #include "assemblysectionheader.h"
-#include "interface_types/marshal/assemblytypes/assemblypeheaders.h"
+#include "interface/types/marshal/assemblytypes/assemblypeheaders.h"
 
 namespace NativeTypes
 {

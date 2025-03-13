@@ -1,5 +1,5 @@
 #include "settingsstore.h"
-#include "widgets/codeeditor/codeeditordefinitions.h"
+#include "ui/widgets/codeeditor/codeeditordefinitions.h"
 #include <KSyntaxHighlighting/Theme>
 #include <QFontDatabase>
 #include <QSettings>

@@ -5,7 +5,7 @@
 */
 
 #pragma once
-#include "interface_types/marshal/decompilationinfo.h"
+#include "interface/types/marshal/decompilationinfo.h"
 #include <QPlainTextEdit>
 
 namespace KSyntaxHighlighting { class Definition; class SyntaxHighlighter; class Theme; }

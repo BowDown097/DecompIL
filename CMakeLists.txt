@@ -38,66 +38,66 @@ endif()
 
 set(SOURCE_FILES
     src/decompilapplication.cpp
-    src/interface.cpp
-    src/libraryhandle.cpp
     src/main.cpp
     src/mainwindow.cpp
-    src/richtextitemdelegate.cpp
-    src/settingsform.cpp
     src/settingsstore.cpp
-    src/uiutils.cpp
-    src/widgets/assemblytreeitem.cpp
-    src/widgets/findbar.cpp
-    src/widgets/typetreeitem.cpp
-    src/widgets/codeeditor/codeeditor.cpp
-    src/widgets/codeeditor/codeeditordefinitions.cpp
-    src/widgets/codeeditor/codeeditorsidebar.cpp)
+    src/interface/interface.cpp
+    src/interface/libraryhandle.cpp
+    src/ui/richtextitemdelegate.cpp
+    src/ui/settingsform.cpp
+    src/ui/widgets/assemblytreeitem.cpp
+    src/ui/widgets/findbar.cpp
+    src/ui/widgets/typetreeitem.cpp
+    src/ui/widgets/codeeditor/codeeditor.cpp
+    src/ui/widgets/codeeditor/codeeditordefinitions.cpp
+    src/ui/widgets/codeeditor/codeeditorsidebar.cpp
+    src/utils/uiutils.cpp)
 
 set(HEADERS
     src/decompilapplication.h
-    src/interface.h
     src/languagemapping.h
-    src/libraryhandle.h
     src/mainwindow.h
-    src/richtextitemdelegate.h
-    src/settingsform.h
     src/settingsstore.h
-    src/uiutils.h
-    src/interface_types/marshal/decompilationinfo.h
-    src/interface_types/marshal/marshalexception.h
-    src/interface_types/marshal/marshalexpected.h
-    src/interface_types/marshal/marshallist.h
-    src/interface_types/marshal/marshalnullable.h
-    src/interface_types/marshal/marshalstring.h
-    src/interface_types/marshal/assemblytypes/assemblycoffheader.h
-    src/interface_types/marshal/assemblytypes/assemblycommonattributes.h
-    src/interface_types/marshal/assemblytypes/assemblycorheader.h
-    src/interface_types/marshal/assemblytypes/assemblyinfo.h
-    src/interface_types/marshal/assemblytypes/assemblymetadata.h
-    src/interface_types/marshal/assemblytypes/assemblypeheader.h
-    src/interface_types/marshal/assemblytypes/assemblypeheaders.h
-    src/interface_types/marshal/assemblytypes/assemblysectionheader.h
-    src/interface_types/marshal/assemblytypes/assemblytypemetadata.h
-    src/interface_types/marshal/assemblytypes/shared.h
-    src/interface_types/native/assemblycommonattributes.h
-    src/interface_types/native/assemblyinfo.h
-    src/interface_types/native/assemblymetadata.h
-    src/interface_types/native/assemblypeheaders.h
-    src/interface_types/native/assemblysectionheader.h
-    src/interface_types/native/assemblytypemetadata.h
-    src/views_concat/concat.hpp
-    src/views_concat/utils.hpp
-    src/widgets/assemblytreeitem.h
-    src/widgets/findbar.h
-    src/widgets/typetreeitem.h
-    src/widgets/codeeditor/codeeditor.h
-    src/widgets/codeeditor/codeeditordefinitions.h
-    src/widgets/codeeditor/codeeditorsidebar.h)
+    src/interface/interface.h
+    src/interface/libraryhandle.h
+    src/interface/types/marshal/decompilationinfo.h
+    src/interface/types/marshal/marshalexception.h
+    src/interface/types/marshal/marshalexpected.h
+    src/interface/types/marshal/marshallist.h
+    src/interface/types/marshal/marshalnullable.h
+    src/interface/types/marshal/marshalstring.h
+    src/interface/types/marshal/assemblytypes/assemblycoffheader.h
+    src/interface/types/marshal/assemblytypes/assemblycommonattributes.h
+    src/interface/types/marshal/assemblytypes/assemblycorheader.h
+    src/interface/types/marshal/assemblytypes/assemblyinfo.h
+    src/interface/types/marshal/assemblytypes/assemblymetadata.h
+    src/interface/types/marshal/assemblytypes/assemblypeheader.h
+    src/interface/types/marshal/assemblytypes/assemblypeheaders.h
+    src/interface/types/marshal/assemblytypes/assemblysectionheader.h
+    src/interface/types/marshal/assemblytypes/assemblytypemetadata.h
+    src/interface/types/marshal/assemblytypes/shared.h
+    src/interface/types/native/assemblycommonattributes.h
+    src/interface/types/native/assemblyinfo.h
+    src/interface/types/native/assemblymetadata.h
+    src/interface/types/native/assemblypeheaders.h
+    src/interface/types/native/assemblysectionheader.h
+    src/interface/types/native/assemblytypemetadata.h
+    src/ui/richtextitemdelegate.h
+    src/ui/settingsform.h
+    src/ui/widgets/assemblytreeitem.h
+    src/ui/widgets/findbar.h
+    src/ui/widgets/typetreeitem.h
+    src/ui/widgets/codeeditor/codeeditor.h
+    src/ui/widgets/codeeditor/codeeditordefinitions.h
+    src/ui/widgets/codeeditor/codeeditorsidebar.h
+    src/utils/uiutils.h
+    src/utils/views_concat/concat.hpp
+    src/utils/views_concat/utils.hpp)
 
 set(FORMS
     src/mainwindow.ui
-    src/settingsform.ui
-    src/widgets/findbar.ui)
+    src/ui/settingsform.ui
+    src/ui/widgets/findbar.ui)
 
 if(WIN32)
     add_executable(${CMAKE_PROJECT_NAME} WIN32 ${SOURCE_FILES} ${HEADERS} ${FORMS})

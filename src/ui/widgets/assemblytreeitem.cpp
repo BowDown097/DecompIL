@@ -1,12 +1,12 @@
 #include "assemblytreeitem.h"
 #include "typetreeitem.h"
-#include "uiutils.h"
+#include "utils/uiutils.h"
 #include <QDirIterator>
 #include <QXmlStreamReader>
 #include <ranges>
 
 #ifndef __cpp_lib_ranges_concat
-#include "views_concat/concat.hpp"
+#include "utils/views_concat/concat.hpp"
 #endif
 
 namespace detail

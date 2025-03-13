@@ -2,7 +2,7 @@
 #include "assemblymetadata.h"
 #include "assemblypeheaders.h"
 #include "assemblytypemetadata.h"
-#include "interface_types/marshal/assemblytypes/assemblyinfo.h"
+#include "interface/types/marshal/assemblytypes/assemblyinfo.h"
 
 namespace NativeTypes
 {

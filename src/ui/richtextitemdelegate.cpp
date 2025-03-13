@@ -5,19 +5,19 @@
 #include <QTextDocument>
 #include <QTextOption>
 
-void RichTextItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& inOption,
-                                 const QModelIndex& index) const {
+void RichTextItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& inOption, const QModelIndex& index) const
+{
     QStyleOptionViewItem option = inOption;
     initStyleOption(&option, index);
 
-    if (option.text.isEmpty()) {
+    if (option.text.isEmpty())
+    {
         // This is nothing this function is supposed to handle
         QStyledItemDelegate::paint(painter, inOption, index);
-
         return;
     }
 
-    QStyle *style = option.widget ? option.widget->style() : QApplication::style();
+    QStyle* style = option.widget ? option.widget->style() : QApplication::style();
 
     QTextOption textOption;
     textOption.setWrapMode((option.features & QStyleOptionViewItem::WrapText)
@@ -32,19 +32,17 @@ void RichTextItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& 
     doc.setTextWidth(option.rect.width());
     doc.adjustSize();
 
-    if (doc.size().width() > option.rect.width()) {
+    if (doc.size().width() > option.rect.width())
+    {
         // Elide text
         QTextCursor cursor(&doc);
         cursor.movePosition(QTextCursor::End);
 
         const QString elidedPostfix = "...";
-        QFontMetrics metric(option.font);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
-        int postfixWidth = metric.horizontalAdvance(elidedPostfix);
-#else
-        int postfixWidth = metric.width(elidedPostfix);
-#endif
-        while (doc.size().width() > option.rect.width() - postfixWidth) {
+        int postfixWidth = option.fontMetrics.horizontalAdvance(elidedPostfix);
+
+        while (doc.size().width() > option.rect.width() - postfixWidth)
+        {
             cursor.deletePreviousChar();
             doc.adjustSize();
         }
@@ -59,8 +57,7 @@ void RichTextItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& 
 
     // Figure out where to render the text in order to follow the requested alignment
     QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &option);
-    QSize documentSize(doc.size().width(), doc.size().height()); // Convert QSizeF to QSize
-    QRect layoutRect = QStyle::alignedRect(Qt::LayoutDirectionAuto, option.displayAlignment, documentSize, textRect);
+    QRect layoutRect = QStyle::alignedRect(Qt::LayoutDirectionAuto, option.displayAlignment, doc.size().toSize(), textRect);
 
     painter->save();
 
@@ -72,11 +69,13 @@ void RichTextItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& 
     painter->restore();
 }
 
-QSize RichTextItemDelegate::sizeHint(const QStyleOptionViewItem &inOption, const QModelIndex &index) const {
+QSize RichTextItemDelegate::sizeHint(const QStyleOptionViewItem& inOption, const QModelIndex& index) const
+{
     QStyleOptionViewItem option = inOption;
     initStyleOption(&option, index);
 
-    if (option.text.isEmpty()) {
+    if (option.text.isEmpty())
+    {
         // This is nothing this function is supposed to handle
         return QStyledItemDelegate::sizeHint(inOption, index);
     }
