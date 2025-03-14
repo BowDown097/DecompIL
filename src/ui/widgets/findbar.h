@@ -13,6 +13,7 @@ public:
     ~FindBar();
 
     void setReveal(bool reveal);
+    void updatePosition();
 private:
     int currentIndex{};
     QList<QPair<int, int>> matches;

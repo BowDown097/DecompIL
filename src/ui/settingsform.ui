@@ -147,8 +147,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>124</height>
+            <width>362</width>
+            <height>226</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -173,6 +173,27 @@
            <property name="bottomMargin">
             <number>10</number>
            </property>
+           <item>
+            <widget class="QCheckBox" name="showSidebar">
+             <property name="text">
+              <string>Show sidebar</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="showScrollBarH">
+             <property name="text">
+              <string>Show horizontal scroll bar</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="showScrollBarV">
+             <property name="text">
+              <string>Show vertical scroll bar</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <property name="spacing">
@@ -228,6 +249,9 @@
              </item>
              <item>
               <widget class="QSpinBox" name="editorTabWidthSpin">
+               <property name="minimum">
+                <number>1</number>
+               </property>
                <property name="maximum">
                 <number>16</number>
                </property>

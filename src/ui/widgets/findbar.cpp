@@ -139,8 +139,7 @@ void FindBar::setReveal(bool reveal)
 {
     if (reveal)
     {
-        QPlainTextEdit* parentTextEdit = qobject_cast<QPlainTextEdit*>(parent());
-        move(parentTextEdit->width() - parentTextEdit->verticalScrollBar()->width() - 250, 0);
+        updatePosition();
         show();
         ui->searchBox->setFocus();
     }
@@ -150,4 +149,13 @@ void FindBar::setReveal(bool reveal)
         hide();
         ui->searchBox->clear();
     }
+}
+
+void FindBar::updatePosition()
+{
+    QPlainTextEdit* parentTextEdit = qobject_cast<QPlainTextEdit*>(parent());
+    if (parentTextEdit->verticalScrollBar()->isVisible())
+        move(parentTextEdit->width() - parentTextEdit->verticalScrollBar()->width() - width(), 0);
+    else
+        move(parentTextEdit->width() - width(), 0);
 }

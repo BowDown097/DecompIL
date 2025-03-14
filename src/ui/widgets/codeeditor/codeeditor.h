@@ -11,6 +11,7 @@
 namespace KSyntaxHighlighting { class Definition; class SyntaxHighlighter; class Theme; }
 
 class CodeEditorSidebar;
+class FindBar;
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -21,19 +22,23 @@ public:
     void setTabWidth(int width);
     void setText(const QString& text, DisplayLanguage language);
     void setTheme(const KSyntaxHighlighting::Theme& theme);
+    void updateSidebarGeometry();
+
+    FindBar* findBar() const { return m_findBar; }
+    CodeEditorSidebar* sidebar() const { return m_sidebar; }
 protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
 private:
+    FindBar* m_findBar;
     KSyntaxHighlighting::SyntaxHighlighter* m_highlighter;
-    CodeEditorSidebar* m_sideBar;
+    CodeEditorSidebar* m_sidebar;
 
     void highlightCurrentLine();
 
     void sidebarPaintEvent(QPaintEvent* event);
     int sidebarWidth() const;
     void updateSidebarArea(const QRect& rect, int dy);
-    void updateSidebarGeometry();
 
     QTextBlock blockAtPosition(int y) const;
     bool isFoldable(const QTextBlock& block) const;

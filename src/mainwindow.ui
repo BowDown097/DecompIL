@@ -156,11 +156,7 @@
         </property>
        </column>
       </widget>
-      <widget class="CodeEditor" name="codeEditor">
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
-       </property>
-      </widget>
+      <widget class="CodeEditor" name="codeEditor"/>
      </widget>
     </item>
    </layout>

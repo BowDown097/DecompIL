@@ -16,6 +16,14 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
 private:
     Ui::SettingsForm* ui;
+
+    template<typename T>
+    inline void enableSaveFor(auto signal)
+    {
+        const QList<T*> children = findChildren<T*>();
+        for (T* child : children)
+            connect(child, signal, this, &SettingsForm::enableSaveButton);
+    }
 private slots:
     void changeAppStyle();
     void changeEditorTabWidth(int width);
@@ -25,4 +33,7 @@ private slots:
     void promptFontChange();
     void revertLiveChanges();
     void saveSettings();
+    void toggleEditorScrollBarH(bool on);
+    void toggleEditorScrollBarV(bool on);
+    void toggleEditorSidebar(bool on);
 };

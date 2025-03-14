@@ -8,6 +8,7 @@
 #include "codeeditordefinitions.h"
 #include "codeeditorsidebar.h"
 #include "decompilapplication.h"
+#include "ui/widgets/findbar.h"
 #include <KSyntaxHighlighting/Repository>
 #include <KSyntaxHighlighting/SyntaxHighlighter>
 #include <KSyntaxHighlighting/Theme>
@@ -17,8 +18,9 @@
 
 CodeEditor::CodeEditor(QWidget* parent)
     : QPlainTextEdit(parent),
+      m_findBar(new FindBar(this)),
       m_highlighter(new KSyntaxHighlighting::SyntaxHighlighter(document())),
-      m_sideBar(new CodeEditorSidebar(this))
+      m_sidebar(new CodeEditorSidebar(this))
 {
     QFont font;
     font.fromString(decompILApp->settings().editorFont);
@@ -26,6 +28,7 @@ CodeEditor::CodeEditor(QWidget* parent)
     setFont(font);
     setTabWidth(decompILApp->settings().editorTabWidth);
     setTheme(CodeEditorDefinitions::repository().theme(decompILApp->settings().editorTheme));
+    m_sidebar->setVisible(decompILApp->settings().editorShowSidebar);
 
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::updateSidebarGeometry);
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::updateSidebarArea);
@@ -47,6 +50,7 @@ void CodeEditor::setText(const QString& text, DisplayLanguage language)
         ? CodeEditorDefinitions::CSharpDefinition()
         : CodeEditorDefinitions::CILDefinition());
     setPlainText(text);
+    m_findBar->updatePosition();
 }
 
 void CodeEditor::setTheme(const KSyntaxHighlighting::Theme& theme)
@@ -62,6 +66,13 @@ void CodeEditor::setTheme(const KSyntaxHighlighting::Theme& theme)
     m_highlighter->setTheme(theme);
     m_highlighter->rehighlight();
     highlightCurrentLine();
+}
+
+void CodeEditor::updateSidebarGeometry()
+{
+    setViewportMargins(sidebarWidth(), 0, 0, 0);
+    const QRect r = contentsRect();
+    m_sidebar->setGeometry(r.left(), r.top(), sidebarWidth(), r.height());
 }
 
 void CodeEditor::contextMenuEvent(QContextMenuEvent* event)
@@ -115,7 +126,7 @@ void CodeEditor::highlightCurrentLine()
 
 void CodeEditor::sidebarPaintEvent(QPaintEvent* event)
 {
-    QPainter painter(m_sideBar);
+    QPainter painter(m_sidebar);
     painter.fillRect(event->rect(), m_highlighter->theme().editorColor(KSyntaxHighlighting::Theme::IconBorder));
 
     QTextBlock block = firstVisibleBlock();
@@ -131,7 +142,7 @@ void CodeEditor::sidebarPaintEvent(QPaintEvent* event)
             const QString number = QString::number(blockNumber + 1);
             painter.setPen(m_highlighter->theme().editorColor(blockNumber == currentBlockNumber
                 ? KSyntaxHighlighting::Theme::CurrentLineNumber : KSyntaxHighlighting::Theme::LineNumbers));
-            painter.drawText(0, top, m_sideBar->width() - 2 - foldingMarkerSize, fontMetrics().height(), Qt::AlignRight, number);
+            painter.drawText(0, top, m_sidebar->width() - 2 - foldingMarkerSize, fontMetrics().height(), Qt::AlignRight, number);
         }
 
         // folding marker
@@ -156,7 +167,7 @@ void CodeEditor::sidebarPaintEvent(QPaintEvent* event)
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setPen(Qt::NoPen);
             painter.setBrush(QColor(m_highlighter->theme().editorColor(KSyntaxHighlighting::Theme::CodeFolding)));
-            painter.translate(m_sideBar->width() - foldingMarkerSize, top);
+            painter.translate(m_sidebar->width() - foldingMarkerSize, top);
             painter.drawPolygon(polygon);
             painter.restore();
         }
@@ -169,6 +180,8 @@ void CodeEditor::sidebarPaintEvent(QPaintEvent* event)
 
 int CodeEditor::sidebarWidth() const
 {
+    if (m_sidebar->isHidden())
+        return 0;
     int digits = 1;
     for (int count = blockCount(); count >= 10; ++digits, count /= 10);
     return 4 + fontMetrics().horizontalAdvance('9') * digits + fontMetrics().lineSpacing();
@@ -177,16 +190,9 @@ int CodeEditor::sidebarWidth() const
 void CodeEditor::updateSidebarArea(const QRect& rect, int dy)
 {
     if (dy)
-        m_sideBar->scroll(0, dy);
+        m_sidebar->scroll(0, dy);
     else
-        m_sideBar->update(0, rect.y(), m_sideBar->width(), rect.height());
-}
-
-void CodeEditor::updateSidebarGeometry()
-{
-    setViewportMargins(sidebarWidth(), 0, 0, 0);
-    const QRect r = contentsRect();
-    m_sideBar->setGeometry(r.left(), r.top(), sidebarWidth(), r.height());
+        m_sidebar->update(0, rect.y(), m_sidebar->width(), rect.height());
 }
 
 QTextBlock CodeEditor::blockAtPosition(int y) const

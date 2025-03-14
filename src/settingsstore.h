@@ -11,11 +11,14 @@ public:
 
     QString appStyle;
     bool darkTheme;
+    bool csImplicitUsings;
+    bool csStripILWarnings;
     QString editorFont;
+    bool editorShowScrollBarH;
+    bool editorShowScrollBarV;
+    bool editorShowSidebar;
     int editorTabWidth;
     QString editorTheme;
-    bool implicitUsings;
-    bool stripILWarnings;
 
     void initialize();
     void save();

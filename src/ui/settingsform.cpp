@@ -5,6 +5,8 @@
 #include "utils/uiutils.h"
 #include "widgets/codeeditor/codeeditor.h"
 #include "widgets/codeeditor/codeeditordefinitions.h"
+#include "widgets/codeeditor/codeeditorsidebar.h"
+#include "widgets/findbar.h"
 #include <KSyntaxHighlighting/Repository>
 #include <KSyntaxHighlighting/Theme>
 #include <QFontDialog>
@@ -25,15 +27,14 @@ SettingsForm::SettingsForm(QWidget* parent)
     connect(ui->editorTabWidthSpin, &QSpinBox::valueChanged, this, &SettingsForm::changeEditorTabWidth);
     connect(ui->editorThemeCombo, &QComboBox::currentIndexChanged, this, &SettingsForm::changeEditorTheme);
     connect(ui->saveButton, &QPushButton::clicked, this, &SettingsForm::saveSettings);
+    connect(ui->showScrollBarH, &QCheckBox::clicked, this, &SettingsForm::toggleEditorScrollBarH);
+    connect(ui->showScrollBarV, &QCheckBox::clicked, this, &SettingsForm::toggleEditorScrollBarV);
+    connect(ui->showSidebar, &QCheckBox::clicked, this, &SettingsForm::toggleEditorSidebar);
 
-    for (QToolButton* toolButton : findChildren<QToolButton*>())
-        connect(toolButton, &QToolButton::clicked, this, &SettingsForm::enableSaveButton);
-    for (QCheckBox* checkBox : findChildren<QCheckBox*>())
-        connect(checkBox, &QCheckBox::clicked, this, &SettingsForm::enableSaveButton);
-    for (QSpinBox* spinBox : findChildren<QSpinBox*>())
-        connect(spinBox, &QSpinBox::valueChanged, this, &SettingsForm::enableSaveButton);
-    for (QComboBox* comboBox : findChildren<QComboBox*>())
-        connect(comboBox, &QComboBox::currentIndexChanged, this, &SettingsForm::enableSaveButton);
+    enableSaveFor<QToolButton>(&QToolButton::clicked);
+    enableSaveFor<QCheckBox>(&QCheckBox::clicked);
+    enableSaveFor<QSpinBox>(&QSpinBox::valueChanged);
+    enableSaveFor<QComboBox>(&QComboBox::currentIndexChanged);
 }
 
 SettingsForm::~SettingsForm()
@@ -85,8 +86,13 @@ void SettingsForm::fillFromSettings()
     ui->appStyle->addItems(QStyleFactory::keys());
     ui->appStyle->setCurrentIndex(ui->appStyle->findText(store.appStyle));
     ui->darkTheme->setChecked(store.darkTheme);
-    ui->implicitUsings->setChecked(store.implicitUsings);
-    ui->stripILWarnings->setChecked(store.stripILWarnings);
+
+    ui->implicitUsings->setChecked(store.csImplicitUsings);
+    ui->stripILWarnings->setChecked(store.csStripILWarnings);
+
+    ui->showScrollBarH->setChecked(store.editorShowScrollBarH);
+    ui->showScrollBarV->setChecked(store.editorShowScrollBarV);
+    ui->showSidebar->setChecked(store.editorShowSidebar);
 
     QFont font;
     font.fromString(store.editorFont);
@@ -130,8 +136,11 @@ void SettingsForm::revertLiveChanges()
     font.fromString(store.editorFont);
     MainWindow::codeEditor()->setFont(font);
 
-    MainWindow::codeEditor()->setTabWidth(store.editorTabWidth);
-    MainWindow::codeEditor()->setTheme(CodeEditorDefinitions::themes().at(ui->editorThemeCombo->findText(store.editorTheme)));
+    toggleEditorSidebar(store.editorShowSidebar);
+    toggleEditorScrollBarH(store.editorShowScrollBarH);
+    toggleEditorScrollBarV(store.editorShowScrollBarV);
+    changeEditorTabWidth(store.editorTabWidth);
+    changeEditorTheme(ui->editorThemeCombo->findText(store.editorTheme));
 }
 
 void SettingsForm::saveSettings()
@@ -139,16 +148,39 @@ void SettingsForm::saveSettings()
     ui->saveButton->setEnabled(false);
 
     SettingsStore& store = decompILApp->settings();
+
     store.appStyle = ui->appStyle->currentText();
     store.darkTheme = ui->darkTheme->isChecked();
+
+    store.csImplicitUsings = ui->implicitUsings->isChecked();
+    store.csStripILWarnings = ui->stripILWarnings->isChecked();
+
     store.editorFont = ui->editorFontDisplayLabel->font().toString();
+    store.editorShowScrollBarH = ui->showScrollBarH->isChecked();
+    store.editorShowScrollBarV = ui->showScrollBarV->isChecked();
+    store.editorShowSidebar = ui->showSidebar->isChecked();
     store.editorTabWidth = ui->editorTabWidthSpin->value();
     store.editorTheme = ui->editorThemeCombo->currentData().toString();
-    store.implicitUsings = ui->implicitUsings->isChecked();
-    store.stripILWarnings = ui->stripILWarnings->isChecked();
 
     store.save();
     store.initialize();
 
     QMessageBox::information(this, tr("Saved!"), tr("Settings saved successfully."));
+}
+
+void SettingsForm::toggleEditorScrollBarH(bool on)
+{
+    MainWindow::codeEditor()->setHorizontalScrollBarPolicy(on ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+}
+
+void SettingsForm::toggleEditorScrollBarV(bool on)
+{
+    MainWindow::codeEditor()->setVerticalScrollBarPolicy(on ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+    MainWindow::codeEditor()->findBar()->updatePosition();
+}
+
+void SettingsForm::toggleEditorSidebar(bool on)
+{
+    MainWindow::codeEditor()->sidebar()->setVisible(on);
+    MainWindow::codeEditor()->updateSidebarGeometry();
 }

@@ -21,7 +21,6 @@ public:
     static CodeEditor* codeEditor() { return m_codeEditor; }
 private:
     inline static CodeEditor* m_codeEditor;
-    FindBar* m_findBar;
     Ui::MainWindow* ui;
 
     void openAssembly(const QString& path);

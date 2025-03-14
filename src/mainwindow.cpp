@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
 
     m_codeEditor = ui->codeEditor;
-    m_findBar = new FindBar(ui->codeEditor);
 
     setWindowTitle(DECOMPIL_APP_NAME " v" DECOMPIL_VERSION_NAME);
     ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
@@ -120,7 +119,7 @@ void MainWindow::sortAssemblies()
 
 void MainWindow::findInEditor()
 {
-    m_findBar->setReveal(m_findBar->isHidden());
+    m_codeEditor->findBar()->setReveal(m_codeEditor->findBar()->isHidden());
 }
 
 void MainWindow::redoInEditor()
@@ -205,9 +204,9 @@ void MainWindow::treeItemDoubleClicked(QTreeWidgetItem* item, int)
         {
             if (decompInfo.language == DisplayLanguage::CSharp)
             {
-                if (decompILApp->settings().implicitUsings)
+                if (decompILApp->settings().csImplicitUsings)
                     StringUtils::applyImplicitUsings(code);
-                if (decompILApp->settings().stripILWarnings)
+                if (decompILApp->settings().csStripILWarnings)
                     StringUtils::stripILWarnings(code);
             }
 
