@@ -1,0 +1,146 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+    paths-ignore:
+      - '**.md'
+      - '**/LICENSE'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '**/LICENSE'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Ubuntu
+            qt_ver: 6
+            qt_host: linux
+            qt_version: '6.8.1'
+          - os: windows-2022
+            qt_ver: 6
+            qt_host: windows
+            qt_version: '6.8.1'
+    
+    runs-on: ${{ matrix.os }}
+    
+    env:
+      INSTALL_DIR: "install"
+      INSTALL_APPIMAGE_DIR: "install-appimage"
+      BUILD_DIR: "build"
+      BUILD_TYPE: Debug
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Set up MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install NSIS
+        if: runner.os == 'Windows'
+        run: |
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+          scoop bucket add extras
+          scoop install nsis
+          
+      - name: Set environment variables
+        shell: bash
+        run: |
+          ver_short=`git rev-parse --short HEAD`
+          echo "VERSION=$ver_short" >> $GITHUB_ENV
+          
+      - name: Install dependencies
+        if: runner.os == 'Linux'
+        # universe - libfuse2
+        # ximion/syntalos - kf6-syntax-highlighting
+        run: |
+          sudo add-apt-repository universe
+          sudo add-apt-repository ppa:ximion/syntalos
+          sudo apt-get -y update
+          sudo apt-get -y install libfuse2 libkf6syntaxhighlighting-data libkf6syntaxhighlighting-dev
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14
+      
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt_version }}
+          host: ${{ matrix.qt_host }}
+          target: 'desktop'
+          modules: ${{ matrix.qt_modules }}
+          cache: true
+          cache-key-prefix: ${{ matrix.qt_host }}-${{ matrix.qt_version }}-"${{ matrix.qt_modules }}"-qt_cache
+      
+      - name: Prepare AppImage
+        if: runner.os == 'Linux'
+        run: |
+          wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+          wget "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage"
+          wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+      
+      - name: Configure CMake
+        run: cmake -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_DIR }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+      
+      - name: Build
+        run: cmake --build ${{ env.BUILD_DIR }} --config ${{ env.BUILD_TYPE }}
+        
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }} --config ${{ env.BUILD_TYPE }}
+      
+      #- name: Package (Windows installer)
+        #if: runner.os == 'Windows'
+        #run: |
+          #cd ${{ env.INSTALL_DIR }}
+          #makensis -NOCD "${{ github.workspace }}/${{ env.BUILD_DIR }}/program_info/win_install.nsi"
+      
+      - name: Package (tarball)
+        if: runner.os == 'Linux'
+        run: |
+          cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }}
+          cd ${{ env.INSTALL_DIR }}
+          tar --owner root --group root -czf ../DecompIL.tar.gz *
+      
+      - name: Package (AppImage)
+        if: runner.os == 'Linux'
+        run: |
+          cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
+          export OUTPUT="DecompIL-${{ runner.os }}-${{ env.VERSION }}-Qt${{ matrix.qt_ver }}-${{ env.BUILD_TYPE }}-x86_64.AppImage"
+          chmod +x linuxdeploy-*.AppImage
+          ./linuxdeploy-x86_64.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt -d program_info/decompil.desktop -i program_info/decompil.svg
+      
+      - name: Upload artifact (zip)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecompIL-${{ runner.os }}-${{ env.VERSION }}-Qt${{ matrix.qt_ver }}-${{ env.BUILD_TYPE }}
+          path: ${{ env.INSTALL_DIR }}/**
+          
+      #- name: Upload artifact (installer)
+        #if: runner.os == 'Windows'
+        #uses: actions/upload-artifact@v4
+        #with:
+          #name: DecompIL-${{ runner.os }}-Setup-${{ env.VERSION }}-Qt${{ matrix.qt_ver }}-${{ env.BUILD_TYPE }}
+          #path: DecompIL-Setup.exe
+          
+      - name: Upload artifact (tarball)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecompIL-${{ runner.os }}-${{ env.VERSION }}-Qt${{ matrix.qt_ver }}-${{ env.BUILD_TYPE }}
+          path: DecompIL.tar.gz
+      
+      - name: Upload artifact (AppImage)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecompIL-${{ runner.os }}-${{ env.VERSION }}-Qt${{ matrix.qt_ver }}-${{ env.BUILD_TYPE }}-x86_64.AppImage
+          path: DecompIL-${{ runner.os }}-${{ env.VERSION }}-Qt${{ matrix.qt_ver }}-${{ env.BUILD_TYPE }}-x86_64.AppImage

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=DecompIL
+Comment=.NET assembly browser and decompiler.
+Icon=decompil
+Exec=DecompIL
+Categories=Development;
+GenericName=.NET decompiler

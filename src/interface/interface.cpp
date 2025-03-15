@@ -1,7 +1,7 @@
 #include "interface.h"
 #include "libraryhandle.h"
 
-LibraryHandle libHandle("./" DECOMPIL_BINARY_INTERFACE_NAME);
+LibraryHandle libHandle(DECOMPIL_BINARY_INTERFACE_NAME);
 
 QString Interface::decompileType(TypeDefinitionHandle handle, const DecompilationInfo& info)
 {

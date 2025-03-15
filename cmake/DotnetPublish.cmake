@@ -45,16 +45,24 @@ function(DotnetPublish target project)
         list(GET extra_args 0 command_comment)
     endif()
 
+    if(CMAKE_PROJECT_VERSION_TWEAK)
+        set(assembly_version "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.${PROJECT_VERSION_TWEAK}")
+    elseif(CMAKE_PROJECT_VERSION_PATCH)
+        set(assembly_version "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.0")
+    else()
+        set(assembly_version "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.0.0")
+    endif()
+
     if(${extra_count} GREATER 1)
         list(GET extra_args 1 out_dir)
         add_custom_command(TARGET ${target} POST_BUILD
             COMMENT ${command_comment}
-            COMMAND dotnet publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o ${out_dir}
+            COMMAND dotnet publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o ${out_dir} -p:Version=${assembly_version}
             VERBATIM)
     else()
         add_custom_command(TARGET ${target} POST_BUILD
             COMMENT ${command_comment}
-            COMMAND dotnet publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o $<TARGET_FILE_DIR:${target}>
+            COMMAND dotnet publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o $<TARGET_FILE_DIR:${target}> -p:Version=${assembly_version}
             VERBATIM)
     endif()
 endfunction()

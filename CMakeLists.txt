@@ -125,17 +125,39 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE src)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt::Widgets)
 
-find_package(KF6SyntaxHighlighting REQUIRED)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE KF6::SyntaxHighlighting)
+find_package(KF6SyntaxHighlighting QUIET)
+if(NOT KF6SyntaxHighlighting_FOUND)
+    set(BUILD_TESTING OFF CACHE BOOL "")
+    set(BUILD_codeeditor OFF CACHE BOOL "")
+    set(BUILD_codepdfprinter OFF CACHE BOOL "")
+    set(BUILD_minimaltest OFF CACHE BOOL "")
+
+    include(FetchContent)
+    FetchContent_Declare(
+        KF6SyntaxHighlighting
+        GIT_REPOSITORY https://invent.kde.org/frameworks/syntax-highlighting.git
+        GIT_TAG v6.11.0)
+    FetchContent_MakeAvailable(KF6SyntaxHighlighting)
+
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE KF6SyntaxHighlighting)
+else()
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE KF6::SyntaxHighlighting)
+endif()
 
 include(cmake/DotnetPublish.cmake)
 DotnetPublish(${CMAKE_PROJECT_NAME}
     ${CMAKE_CURRENT_LIST_DIR}/DotnetBinaryInterface/DotnetBinaryInterface.csproj "Building C# library")
 
+include(GNUInstallDirs)
+
 if(WIN32)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
+
+install(
+    FILES $<TARGET_FILE_DIR:DecompIL>/${BINARY_INTERFACE_NAME}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(TARGETS ${CMAKE_PROJECT_NAME}
     BUNDLE DESTINATION .
