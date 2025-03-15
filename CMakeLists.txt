@@ -46,6 +46,7 @@ set(SOURCE_FILES
     src/ui/richtextitemdelegate.cpp
     src/ui/settingsform.cpp
     src/ui/widgets/assemblytreeitem.cpp
+    src/ui/widgets/assemblytreewidget.cpp
     src/ui/widgets/findbar.cpp
     src/ui/widgets/typetreeitem.cpp
     src/ui/widgets/codeeditor/codeeditor.cpp
@@ -86,6 +87,7 @@ set(HEADERS
     src/ui/richtextitemdelegate.h
     src/ui/settingsform.h
     src/ui/widgets/assemblytreeitem.h
+    src/ui/widgets/assemblytreewidget.h
     src/ui/widgets/findbar.h
     src/ui/widgets/typetreeitem.h
     src/ui/widgets/codeeditor/codeeditor.h

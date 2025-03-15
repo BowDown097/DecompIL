@@ -136,9 +136,9 @@ void SettingsForm::revertLiveChanges()
     font.fromString(store.editorFont);
     MainWindow::codeEditor()->setFont(font);
 
-    toggleEditorSidebar(store.editorShowSidebar);
     toggleEditorScrollBarH(store.editorShowScrollBarH);
     toggleEditorScrollBarV(store.editorShowScrollBarV);
+    toggleEditorSidebar(store.editorShowSidebar);
     changeEditorTabWidth(store.editorTabWidth);
     changeEditorTheme(ui->editorThemeCombo->findText(store.editorTheme));
 }

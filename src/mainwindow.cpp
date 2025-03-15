@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
 
     connect(ui->closeAllAction, &QAction::triggered, this, &MainWindow::closeAssemblies);
-    connect(ui->openAction, &QAction::triggered, this, &MainWindow::openAssemblies);
+    connect(ui->openAction, &QAction::triggered, this, &MainWindow::promptForAssemblies);
     connect(ui->reloadAllAction, &QAction::triggered, this, &MainWindow::reloadAssemblies);
     connect(ui->sortAssembliesAction, &QAction::triggered, this, &MainWindow::sortAssemblies);
 
@@ -45,7 +45,8 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(ui->csVersionCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
     connect(ui->languageCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
-    connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &MainWindow::treeItemDoubleClicked);
+    connect(ui->treeWidget, &AssemblyTreeWidget::filesDropped, this, &MainWindow::openAssemblies);
+    connect(ui->treeWidget, &AssemblyTreeWidget::itemDoubleClicked, this, &MainWindow::treeItemDoubleClicked);
 }
 
 MainWindow::~MainWindow()
@@ -71,22 +72,25 @@ void MainWindow::openAssembly(const QString& path)
     }
 }
 
+void MainWindow::openAssemblies(const QStringList& assemblies)
+{
+    for (const QString& assembly : assemblies)
+    {
+        openAssembly(assembly);
+        QCoreApplication::processEvents();
+    }
+}
+
 void MainWindow::closeAssemblies()
 {
     ui->treeWidget->clear();
 }
 
-void MainWindow::openAssemblies()
+void MainWindow::promptForAssemblies()
 {
-    const QStringList assemblyPaths = QFileDialog::getOpenFileNames(
+    openAssemblies(QFileDialog::getOpenFileNames(
         this, tr("Choose .NET executable(s)"), QString(),
-        tr(".NET Executables (*.exe *.dll *.netmodule *.winmd);;All Files (*)"));
-
-    for (const QString& assemblyPath : assemblyPaths)
-    {
-        openAssembly(assemblyPath);
-        QCoreApplication::processEvents();
-    }
+        tr(".NET Executables (*.exe *.dll *.netmodule *.winmd);;All Files (*)")));
 }
 
 void MainWindow::reloadAssemblies()

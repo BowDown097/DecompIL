@@ -24,9 +24,10 @@ private:
     Ui::MainWindow* ui;
 
     void openAssembly(const QString& path);
+    void openAssemblies(const QStringList& assemblies);
 private slots:
     void closeAssemblies();
-    void openAssemblies();
+    void promptForAssemblies();
     void reloadAssemblies();
     void sortAssemblies();
 

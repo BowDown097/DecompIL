@@ -146,7 +146,7 @@
       <property name="handleWidth">
        <number>0</number>
       </property>
-      <widget class="QTreeWidget" name="treeWidget">
+      <widget class="AssemblyTreeWidget" name="treeWidget">
        <property name="headerHidden">
         <bool>true</bool>
        </property>
@@ -287,6 +287,11 @@
    <class>CodeEditor</class>
    <extends>QPlainTextEdit</extends>
    <header>ui/widgets/codeeditor/codeeditor.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AssemblyTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>ui/widgets/assemblytreewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
