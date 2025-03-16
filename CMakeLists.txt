@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.24)
 project(DecompIL
     VERSION 0.1
     DESCRIPTION "Yet another .NET decompiler."
@@ -127,16 +127,34 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt::Widgets)
 
 find_package(KF6SyntaxHighlighting QUIET)
 if(NOT KF6SyntaxHighlighting_FOUND)
+    set(BUILD_DOC OFF CACHE BOOL "")
     set(BUILD_TESTING OFF CACHE BOOL "")
     set(BUILD_codeeditor OFF CACHE BOOL "")
     set(BUILD_codepdfprinter OFF CACHE BOOL "")
     set(BUILD_minimaltest OFF CACHE BOOL "")
 
     include(FetchContent)
+    set(KF6_GIT_TAG v6.11.0)
+
+    find_package(ECM QUIET)
+    if(NOT ECM_FOUND)
+        FetchContent_Declare(
+            ECM
+            GIT_REPOSITORY https://invent.kde.org/frameworks/extra-cmake-modules.git
+            GIT_TAG ${KF6_GIT_TAG}
+            OVERRIDE_FIND_PACKAGE)
+        FetchContent_MakeAvailable(ECM)
+
+        set(ECM_FIND_MODULE_DIR "${ECM_SOURCE_DIR}/find-modules")
+        set(ECM_KDE_MODULE_DIR "${ECM_SOURCE_DIR}/kde-modules")
+        set(ECM_MODULE_DIR "${ECM_SOURCE_DIR}/modules")
+        set(ECM_MODULE_PATH "${CMAKE_MODULE_PATH};${ECM_FIND_MODULE_DIR};${ECM_KDE_MODULE_DIR};${ECM_MODULE_DIR}")
+    endif()
+
     FetchContent_Declare(
         KF6SyntaxHighlighting
         GIT_REPOSITORY https://invent.kde.org/frameworks/syntax-highlighting.git
-        GIT_TAG v6.11.0)
+        GIT_TAG ${KF6_GIT_TAG})
     FetchContent_MakeAvailable(KF6SyntaxHighlighting)
 
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE KF6SyntaxHighlighting)
