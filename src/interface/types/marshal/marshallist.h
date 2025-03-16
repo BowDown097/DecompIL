@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdlib>
 #include <QList>
 
 template<typename T>
@@ -7,7 +8,7 @@ class MarshalList
 public:
     template<typename U> requires std::is_constructible_v<T, const U&>
     MarshalList(const QList<U>& qList)
-        : m_data(static_cast<T*>(aligned_alloc(alignof(T), sizeof(T) * qList.size()))),
+        : m_data(static_cast<T*>(std::aligned_alloc(alignof(T), sizeof(T) * qList.size()))),
           m_capacity(qList.capacity()),
           m_size(qList.size())
     {
@@ -15,7 +16,7 @@ public:
     }
 
     MarshalList(const MarshalList& other)
-        : m_data(static_cast<T*>(aligned_alloc(alignof(T), sizeof(T) * other.m_size))),
+        : m_data(static_cast<T*>(std::aligned_alloc(alignof(T), sizeof(T) * other.m_size))),
           m_capacity(other.m_capacity),
           m_size(other.m_size)
     {
