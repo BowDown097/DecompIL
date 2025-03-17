@@ -14,7 +14,7 @@
 LibraryHandle::LibraryHandle(const char* name)
 {
 #ifdef WIN32
-    m_handle = LoadLibraryA(name);
+    m_handle = static_cast<void*>(LoadLibraryA(name));
     if (!m_handle)
         throw std::system_error(GetLastError(), std::system_category(), "Error loading interface library");
 #elif defined(__unix__)
@@ -29,7 +29,7 @@ LibraryHandle::LibraryHandle(const char* name)
 LibraryHandle::~LibraryHandle()
 {
 #ifdef WIN32
-    FreeLibrary(m_handle);
+    FreeLibrary(static_cast<HMODULE>(m_handle));
 #elif defined(__unix__)
     dlclose(m_handle);
 #endif
@@ -38,7 +38,7 @@ LibraryHandle::~LibraryHandle()
 void* LibraryHandle::resolveFunction(const char* name) const
 {
 #ifdef WIN32
-    return GetProcAddress(m_handle, name);
+    return reinterpret_cast<void*>(GetProcAddress(static_cast<HMODULE>(m_handle), name));
 #elif defined(__unix__)
     return dlsym(m_handle, name);
 #endif

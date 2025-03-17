@@ -1,4 +1,6 @@
 function(DotnetPublish target project)
+    set(DOTNET_COMMAND "dotnet" CACHE STRING "Path to dotnet command")
+
     # arch for RID
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
         set(rid_arch "arm64")
@@ -57,12 +59,12 @@ function(DotnetPublish target project)
         list(GET extra_args 1 out_dir)
         add_custom_command(TARGET ${target} POST_BUILD
             COMMENT ${command_comment}
-            COMMAND dotnet publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o ${out_dir} -p:Version=${assembly_version}
+            COMMAND ${DOTNET_COMMAND} publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o ${out_dir} -p:Version=${assembly_version}
             VERBATIM)
     else()
         add_custom_command(TARGET ${target} POST_BUILD
             COMMENT ${command_comment}
-            COMMAND dotnet publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o $<TARGET_FILE_DIR:${target}> -p:Version=${assembly_version}
+            COMMAND ${DOTNET_COMMAND} publish ${project} -c ${build_config} -r ${rid_platform}-${rid_arch} -o $<TARGET_FILE_DIR:${target}> -p:Version=${assembly_version}
             VERBATIM)
     endif()
 endfunction()

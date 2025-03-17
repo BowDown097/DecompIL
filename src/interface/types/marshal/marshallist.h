@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdlib>
 #include <QList>
 
 template<typename T>
@@ -8,7 +7,7 @@ class MarshalList
 public:
     template<typename U> requires std::is_constructible_v<T, const U&>
     MarshalList(const QList<U>& qList)
-        : m_data(static_cast<T*>(std::aligned_alloc(alignof(T), sizeof(T) * qList.size()))),
+        : m_data(allocateData(qList.size())),
           m_capacity(qList.capacity()),
           m_size(qList.size())
     {
@@ -16,7 +15,7 @@ public:
     }
 
     MarshalList(const MarshalList& other)
-        : m_data(static_cast<T*>(std::aligned_alloc(alignof(T), sizeof(T) * other.m_size))),
+        : m_data(allocateData(other.m_size)),
           m_capacity(other.m_capacity),
           m_size(other.m_size)
     {
@@ -31,6 +30,7 @@ public:
     ~MarshalList()
     {
         std::destroy_n(m_data, m_size);
+        freeData();
     }
 
     MarshalList& operator=(const MarshalList& other)
@@ -85,4 +85,22 @@ private:
     T* m_data;
     int m_capacity;
     int m_size;
+
+    T* allocateData(qsizetype count)
+    {
+    #if defined(_MSC_VER) || defined(__MINGW32_MAJOR_VERSION)
+        return static_cast<T*>(_aligned_malloc(sizeof(T) * count, alignof(T)));
+    #else
+        return static_cast<T*>(std::aligned_alloc(alignof(T), sizeof(T) * count));
+    #endif
+    }
+
+    void freeData()
+    {
+    #if defined(_MSC_VER) || defined(__MINGW32_MAJOR_VERSION)
+        _aligned_free(m_data);
+    #else
+        std::free(m_data);
+    #endif
+    }
 };
