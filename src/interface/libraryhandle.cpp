@@ -4,11 +4,11 @@
 LibraryHandle::LibraryHandle(const QString& name)
     : m_handle(new QLibrary(name))
 {
-    if (m_handle->load())
+    if (!m_handle->load())
     {
         // try explicit relative path
         m_handle->setFileName("./" + name);
-        if (m_handle->load())
+        if (!m_handle->load())
             throw std::runtime_error(QStringLiteral("Error loading library: %1").arg(m_handle->errorString()).toStdString());
     }
 }
