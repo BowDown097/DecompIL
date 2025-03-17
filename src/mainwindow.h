@@ -1,5 +1,6 @@
 #pragma once
 #include <QMainWindow>
+#include <set>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -7,6 +8,7 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
+class AssemblyTreeItem;
 class CodeEditor;
 class FindBar;
 class QTreeWidgetItem;
@@ -21,14 +23,20 @@ public:
     static CodeEditor* codeEditor() { return m_codeEditor; }
 private:
     inline static CodeEditor* m_codeEditor;
-    Ui::MainWindow* ui;
+    std::set<QString> m_loadedAssemblies;
 
+    Ui::MainWindow* ui;
+private slots:
     void openAssembly(const QString& path);
     void openAssemblies(const QStringList& assemblies);
-private slots:
+
+    void closeAssembly(AssemblyTreeItem* item);
     void closeAssemblies();
-    void promptForAssemblies();
+
+    void reloadAssembly(AssemblyTreeItem* item);
     void reloadAssemblies();
+
+    void promptForAssemblies();
     void sortAssemblies();
 
     void findInEditor();
@@ -46,4 +54,7 @@ private slots:
 
     void comboBoxChanged(int);
     void treeItemDoubleClicked(QTreeWidgetItem* item, int);
+    void treeItemRightClicked(const QPoint& pos);
+
+    void openFolder(const QString& path);
 };

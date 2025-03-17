@@ -147,6 +147,9 @@
        <number>0</number>
       </property>
       <widget class="AssemblyTreeWidget" name="treeWidget">
+       <property name="contextMenuPolicy">
+        <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
+       </property>
        <property name="headerHidden">
         <bool>true</bool>
        </property>

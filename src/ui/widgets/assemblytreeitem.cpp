@@ -79,6 +79,8 @@ void AssemblyTreeItem::addReferences(const QList<NativeTypes::AssemblyMetadata>&
         QFileInfo refInfo = detail::locateReferenceAssembly(searchDirs, refasm.name);
         if (!refInfo.exists())
             qDebug() << QObject::tr("Failed to locate path for reference assembly") << refasm.name;
+        else
+            m_referencePaths.append(refInfo.absoluteFilePath());
         referencesItem->addChild(new AssemblyTreeItem(refasm, refInfo));
     }
 

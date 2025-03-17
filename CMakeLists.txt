@@ -45,6 +45,7 @@ set(SOURCE_FILES
     src/interface/libraryhandle.cpp
     src/ui/richtextitemdelegate.cpp
     src/ui/settingsform.cpp
+    src/ui/widgets/assemblyitemmenu.cpp
     src/ui/widgets/assemblytreeitem.cpp
     src/ui/widgets/assemblytreewidget.cpp
     src/ui/widgets/findbar.cpp
@@ -86,6 +87,7 @@ set(HEADERS
     src/interface/types/native/assemblytypemetadata.h
     src/ui/richtextitemdelegate.h
     src/ui/settingsform.h
+    src/ui/widgets/assemblyitemmenu.h
     src/ui/widgets/assemblytreeitem.h
     src/ui/widgets/assemblytreewidget.h
     src/ui/widgets/findbar.h
