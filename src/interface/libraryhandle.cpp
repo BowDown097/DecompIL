@@ -1,45 +1,25 @@
 #include "libraryhandle.h"
+#include <QLibrary>
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <system_error>
-#include <Windows.h>
-#elif defined(__unix__)
-#include <dlfcn.h>
-#include <system_error>
-#else
-#include <stdexcept>
-#endif
-
-LibraryHandle::LibraryHandle(const char* name)
+LibraryHandle::LibraryHandle(const QString& name)
+    : m_handle(new QLibrary(name))
 {
-#ifdef WIN32
-    m_handle = static_cast<void*>(LoadLibraryA(name));
-    if (!m_handle)
-        throw std::system_error(GetLastError(), std::system_category(), "Error loading interface library");
-#elif defined(__unix__)
-    m_handle = dlopen(name, RTLD_LAZY);
-    if (!m_handle)
-        throw std::system_error(errno, std::system_category(), "Error loading interface library");
-#else
-    throw std::runtime_error("Error loading interface library: Unsupported platform");
-#endif
+    if (m_handle->load())
+    {
+        // try explicit relative path
+        m_handle->setFileName("./" + name);
+        if (m_handle->load())
+            throw std::runtime_error(QStringLiteral("Error loading library: %1").arg(m_handle->errorString()).toStdString());
+    }
 }
 
 LibraryHandle::~LibraryHandle()
 {
-#ifdef WIN32
-    FreeLibrary(static_cast<HMODULE>(m_handle));
-#elif defined(__unix__)
-    dlclose(m_handle);
-#endif
+    m_handle->unload();
+    m_handle->deleteLater();
 }
 
-void* LibraryHandle::resolveFunction(const char* name) const
+QFunctionPointer LibraryHandle::resolveFunction(const char* name) const
 {
-#ifdef WIN32
-    return reinterpret_cast<void*>(GetProcAddress(static_cast<HMODULE>(m_handle), name));
-#elif defined(__unix__)
-    return dlsym(m_handle, name);
-#endif
+    return m_handle->resolve(name);
 }

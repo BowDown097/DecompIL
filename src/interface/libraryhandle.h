@@ -1,12 +1,13 @@
 #pragma once
+#include <QFunctionPointer>
+#include <QString>
 
 class LibraryHandle
 {
 public:
-    explicit LibraryHandle(const char* name);
+    explicit LibraryHandle(const QString& name);
     ~LibraryHandle();
-
-    void* resolveFunction(const char* name) const;
+    QFunctionPointer resolveFunction(const char* name) const;
 private:
-    void* m_handle{};
+    class QLibrary* m_handle;
 };
