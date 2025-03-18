@@ -4,6 +4,8 @@
 class MarshalString
 {
 public:
+    MarshalString() = default;
+
     MarshalString(const QString& qString)
         : m_data(new QChar[qString.size() + 1]), m_size(qString.size())
     {
@@ -62,6 +64,6 @@ public:
         return QString(m_data, m_size);
     }
 private:
-    QChar* m_data;
-    int m_size;
+    QChar* m_data{};
+    int m_size{};
 };

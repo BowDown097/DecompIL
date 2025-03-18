@@ -7,9 +7,9 @@
 class Interface
 {
 public:
-    static QString decompileType(TypeDefinitionHandle handle, const DecompilationInfo& info);
+    static QString decompileType(const DecompilationInfo& info);
     static MarshalExpected<NativeTypes::AssemblyInfo, MarshalException> getAssembly(const QString& assemblyPath);
 private:
-    typedef MarshalString* (*fnDecompileType)(TypeDefinitionHandle handle, const DecompilationInfo& info);
+    typedef MarshalString* (*fnDecompileType)(const DecompilationInfo& info);
     typedef MarshalExpected<MarshalTypes::AssemblyInfo, MarshalException>* (*fnGetAssembly)(const MarshalString& assemblyPath);
 };

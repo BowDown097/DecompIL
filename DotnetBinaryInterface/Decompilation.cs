@@ -5,7 +5,7 @@ using GetAssemblyResult = MarshalExpected<AssemblyInfo, MarshalException>;
 public static unsafe class Decompilation
 {
     [UnmanagedCallersOnly(EntryPoint = nameof(DecompileType))]
-    public static MarshalString* DecompileType(TypeDefinitionHandle handle, DecompilationInfo* info)
+    public static MarshalString* DecompileType(DecompilationInfo* info)
     {
         string? assemblyPath = info->assemblyPath.ToString()
             ?? throw new InvalidOperationException("Assembly path could not be resolved.");
@@ -13,8 +13,8 @@ public static unsafe class Decompilation
         PEFile module = new(assemblyPath);
         UniversalAssemblyResolver resolver = new(assemblyPath, false, module.Metadata.DetectTargetFrameworkId());
 
-        for (int i = 0; i < info->referenceDirs.Size(); i++)
-            resolver.AddSearchDirectory(info->referenceDirs.At(i).ToString());
+        for (int i = 0; i < info->probingPaths.Size(); i++)
+            resolver.AddSearchDirectory(info->probingPaths.At(i).ToString());
 
         switch (info->language)
         {
@@ -25,7 +25,7 @@ public static unsafe class Decompilation
                     ThrowOnAssemblyResolveErrors = false
                 });
 
-                return Utils.StructureToPtr(new MarshalString(decompiler.DecompileAsString(handle)));
+                return Utils.StructureToPtr(new MarshalString(decompiler.DecompileAsString(info->handle)));
             }
             case DisplayLanguage.IL:
             {
@@ -34,7 +34,7 @@ public static unsafe class Decompilation
                     AssemblyResolver = resolver
                 };
 
-                disassembler.DisassembleType(module, handle);
+                disassembler.DisassembleType(module, info->handle);
                 return Utils.StructureToPtr(new MarshalString(sw.ToString()));
             }
             default: throw new InvalidOperationException("Invalid display language given.");

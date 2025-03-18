@@ -1,4 +1,5 @@
 #pragma once
+#include "assemblytypes/shared.h"
 #include "marshallist.h"
 #include "marshalstring.h"
 
@@ -29,6 +30,7 @@ struct DecompilationInfo
 {
     MarshalString assemblyPath;
     LanguageVersion csVersion;
+    TypeDefinitionHandle handle;
     DisplayLanguage language;
-    MarshalList<MarshalString> referenceDirs;
+    MarshalList<MarshalString> probingPaths;
 };

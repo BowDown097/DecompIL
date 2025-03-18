@@ -1,6 +1,6 @@
 #pragma once
+#include "interface/types/marshal/decompilationinfo.h"
 #include <QMainWindow>
-#include <set>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -8,10 +8,7 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class AssemblyTreeItem;
 class CodeEditor;
-class FindBar;
-class QTreeWidgetItem;
 
 class MainWindow : public QMainWindow
 {
@@ -23,21 +20,11 @@ public:
     static CodeEditor* codeEditor() { return m_codeEditor; }
 private:
     inline static CodeEditor* m_codeEditor;
-    std::set<QString> m_loadedAssemblies;
 
+    DecompilationInfo m_currentDecomp{};
     Ui::MainWindow* ui;
 private slots:
-    void openAssembly(const QString& path);
-    void openAssemblies(const QStringList& assemblies);
-
-    void closeAssembly(AssemblyTreeItem* item);
-    void closeAssemblies();
-
-    void reloadAssembly(AssemblyTreeItem* item);
-    void reloadAssemblies();
-
     void promptForAssemblies();
-    void sortAssemblies();
 
     void findInEditor();
     void redoInEditor();
@@ -53,8 +40,5 @@ private slots:
     void openAboutWindow();
 
     void comboBoxChanged(int);
-    void treeItemDoubleClicked(QTreeWidgetItem* item, int);
-    void treeItemRightClicked(const QPoint& pos);
-
-    void openFolder(const QString& path);
+    void decompileType(TypeDefinitionHandle handle, const QString& assemblyPath, const QStringList& probingPaths);
 };

@@ -1,35 +1,25 @@
 #include "mainwindow.h"
-#include "decompilapplication.h"
 #include "ui_mainwindow.h"
+#include "decompilapplication.h"
 #include "interface/interface.h"
 #include "languagemapping.h"
-#include "ui/richtextitemdelegate.h"
 #include "ui/settingsform.h"
-#include "ui/widgets/assemblyitemmenu.h"
-#include "ui/widgets/assemblytreeitem.h"
-#include "ui/widgets/codeeditor/codeeditordefinitions.h"
 #include "ui/widgets/findbar.h"
-#include "ui/widgets/typetreeitem.h"
 #include "utils/stringutils.h"
 #include <QDesktopServices>
 #include <QFileDialog>
-#include <QMenuBar>
-#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     m_codeEditor = ui->codeEditor;
-
     setWindowTitle(DECOMPIL_APP_NAME " v" DECOMPIL_VERSION_NAME);
-    ui->treeWidget->setItemDelegate(new RichTextItemDelegate);
 
-    connect(ui->closeAllAction, &QAction::triggered, this, &MainWindow::closeAssemblies);
+    connect(ui->closeAllAction, &QAction::triggered, ui->treeWidget, &AssemblyTreeWidget::closeAssemblies);
     connect(ui->openAction, &QAction::triggered, this, &MainWindow::promptForAssemblies);
-    connect(ui->reloadAllAction, &QAction::triggered, this, &MainWindow::reloadAssemblies);
-    connect(ui->sortAssembliesAction, &QAction::triggered, this, &MainWindow::sortAssemblies);
+    connect(ui->reloadAllAction, &QAction::triggered, ui->treeWidget, &AssemblyTreeWidget::reloadAssemblies);
+    connect(ui->sortAssembliesAction, &QAction::triggered, ui->treeWidget, &AssemblyTreeWidget::sortAssemblies);
 
     connect(ui->findAction, &QAction::triggered, this, &MainWindow::findInEditor);
     connect(ui->redoAction, &QAction::triggered, this, &MainWindow::redoInEditor);
@@ -46,9 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(ui->csVersionCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
     connect(ui->languageCombo, &QComboBox::currentIndexChanged, this, &MainWindow::comboBoxChanged);
-    connect(ui->treeWidget, &AssemblyTreeWidget::customContextMenuRequested, this, &MainWindow::treeItemRightClicked);
-    connect(ui->treeWidget, &AssemblyTreeWidget::filesDropped, this, &MainWindow::openAssemblies);
-    connect(ui->treeWidget, &AssemblyTreeWidget::itemDoubleClicked, this, &MainWindow::treeItemDoubleClicked);
+    connect(ui->treeWidget, &AssemblyTreeWidget::decompileRequested, this, &MainWindow::decompileType);
 }
 
 MainWindow::~MainWindow()
@@ -56,88 +44,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::openAssembly(const QString& path)
-{
-    if (!m_loadedAssemblies.insert(path).second)
-        return;
-
-    QFileInfo fileInfo(path);
-    if (auto assemblyInfo = Interface::getAssembly(path))
-    {
-        AssemblyTreeItem* assemblyItem = new AssemblyTreeItem(assemblyInfo->metadata, fileInfo);
-        assemblyItem->addReferences(assemblyInfo->references);
-        assemblyItem->addTypes(assemblyInfo->types);
-        CodeEditorDefinitions::addTypes(assemblyInfo->types);
-        ui->treeWidget->addTopLevelItem(assemblyItem);
-    }
-    else
-    {
-        QMessageBox::critical(this, tr("Loading assembly failed"),
-            fileInfo.fileName() + tr(" threw exception:\n") + assemblyInfo.error().what());
-    }
-}
-
-void MainWindow::openAssemblies(const QStringList& assemblies)
-{
-    for (const QString& assembly : assemblies)
-    {
-        openAssembly(assembly);
-        QCoreApplication::processEvents();
-    }
-}
-
-void MainWindow::closeAssembly(AssemblyTreeItem* item)
-{
-    m_loadedAssemblies.erase(item->path());
-    ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(item));
-    delete item;
-}
-
-void MainWindow::closeAssemblies()
-{
-    ui->treeWidget->clear();
-}
-
-void MainWindow::reloadAssembly(AssemblyTreeItem* item)
-{
-    m_loadedAssemblies.erase(item->path());
-    openAssembly(item->path());
-    delete item;
-}
-
-void MainWindow::reloadAssemblies()
-{
-    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); ++i)
-    {
-        if (AssemblyTreeItem* item = dynamic_cast<AssemblyTreeItem*>(ui->treeWidget->takeTopLevelItem(0)))
-            reloadAssembly(item);
-        QCoreApplication::processEvents();
-    }
-}
-
 void MainWindow::promptForAssemblies()
 {
-    openAssemblies(QFileDialog::getOpenFileNames(
+    ui->treeWidget->openAssemblies(QFileDialog::getOpenFileNames(
         this, tr("Choose .NET executable(s)"), QString(),
         tr(".NET Executables (*.exe *.dll *.netmodule *.winmd);;All Files (*)")));
-}
-
-// sortItems() exists, buuutt it's case sensitive :/ so we have to reimplement it
-void MainWindow::sortAssemblies()
-{
-    QList<QTreeWidgetItem*> items(ui->treeWidget->topLevelItemCount());
-    for (int i = 0; i < items.size(); ++i)
-        items[i] = ui->treeWidget->topLevelItem(i);
-
-    std::ranges::sort(items, [](const QTreeWidgetItem* lhs, const QTreeWidgetItem* rhs) {
-        return lhs->text(0).compare(rhs->text(0), Qt::CaseInsensitive) < 0;
-    });
-
-    for (int i = 0; i < items.size(); ++i)
-    {
-        ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(items[i]));
-        ui->treeWidget->insertTopLevelItem(i, items[i]);
-    }
 }
 
 void MainWindow::findInEditor()
@@ -198,61 +109,30 @@ void MainWindow::openAboutWindow()
 void MainWindow::comboBoxChanged(int)
 {
     ui->csVersionCombo->setVisible(ui->languageCombo->currentText() == "C#");
-    treeItemDoubleClicked(ui->treeWidget->currentItem(), 0);
+    if (m_currentDecomp.handle)
+        decompileType(m_currentDecomp.handle, m_currentDecomp.assemblyPath, m_currentDecomp.probingPaths);
 }
 
-void MainWindow::treeItemDoubleClicked(QTreeWidgetItem* item, int)
+void MainWindow::decompileType(TypeDefinitionHandle handle, const QString& assemblyPath, const QStringList& probingPaths)
 {
-    if (const TypeTreeItem* typeItem = dynamic_cast<TypeTreeItem*>(item))
-    {
-        const AssemblyTreeItem* asmParentItem{};
-        QTreeWidgetItem* parentItem = typeItem->parent();
-        while (parentItem && !(asmParentItem = dynamic_cast<const AssemblyTreeItem*>(parentItem)))
-            parentItem = parentItem->parent();
+    m_currentDecomp = {
+        .assemblyPath = assemblyPath,
+        .csVersion = CSVersionMap[ui->csVersionCombo->currentText()],
+        .handle = handle,
+        .language = DisplayLanguageMap[ui->languageCombo->currentText()],
+        .probingPaths = probingPaths
+    };
 
-        if (!asmParentItem) [[unlikely]]
+    if (QString code = Interface::decompileType(m_currentDecomp); !code.isEmpty())
+    {
+        if (m_currentDecomp.language == DisplayLanguage::CSharp)
         {
-            qCritical() << "Type item has no parent assembly item? How?";
-            return;
+            if (decompILApp->settings().csImplicitUsings)
+                StringUtils::applyImplicitUsings(code);
+            if (decompILApp->settings().csStripILWarnings)
+                StringUtils::stripILWarnings(code);
         }
 
-        DecompilationInfo decompInfo = {
-            .assemblyPath = asmParentItem->path(),
-            .csVersion = CSVersionMap[ui->csVersionCombo->currentText()],
-            .language = DisplayLanguageMap[ui->languageCombo->currentText()],
-            .referenceDirs = asmParentItem->probingPaths()
-        };
-
-        if (QString code = Interface::decompileType(typeItem->handle(), decompInfo); !code.isEmpty())
-        {
-            if (decompInfo.language == DisplayLanguage::CSharp)
-            {
-                if (decompILApp->settings().csImplicitUsings)
-                    StringUtils::applyImplicitUsings(code);
-                if (decompILApp->settings().csStripILWarnings)
-                    StringUtils::stripILWarnings(code);
-            }
-
-            ui->codeEditor->setText(code, decompInfo.language);
-        }
+        ui->codeEditor->setText(code, m_currentDecomp.language);
     }
-}
-
-void MainWindow::treeItemRightClicked(const QPoint& pos)
-{
-    if (AssemblyTreeItem* assemblyItem = dynamic_cast<AssemblyTreeItem*>(ui->treeWidget->itemAt(pos));
-        assemblyItem && assemblyItem->childCount() > 0)
-    {
-        AssemblyItemMenu* menu = new AssemblyItemMenu(assemblyItem, this);
-        connect(menu, &AssemblyItemMenu::closeClicked, this, &MainWindow::closeAssembly);
-        connect(menu, &AssemblyItemMenu::openFolderClicked, this, &MainWindow::openFolder);
-        connect(menu, &AssemblyItemMenu::openReferencesClicked, this, &MainWindow::openAssemblies);
-        connect(menu, &AssemblyItemMenu::reloadClicked, this, &MainWindow::reloadAssembly);
-        menu->popup(ui->treeWidget->mapToGlobal(pos));
-    }
-}
-
-void MainWindow::openFolder(const QString& path)
-{
-    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }

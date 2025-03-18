@@ -5,6 +5,8 @@ template<typename T>
 class MarshalList
 {
 public:
+    MarshalList() = default;
+
     template<typename U> requires std::is_constructible_v<T, const U&>
     MarshalList(const QList<U>& qList)
         : m_data(allocateData(qList.size())),
@@ -82,9 +84,9 @@ public:
         return out;
     }
 private:
-    T* m_data;
-    int m_capacity;
-    int m_size;
+    T* m_data{};
+    int m_capacity{};
+    int m_size{};
 
     T* allocateData(qsizetype count)
     {

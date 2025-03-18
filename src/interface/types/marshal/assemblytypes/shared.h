@@ -492,6 +492,17 @@ enum class TypeAttributes
     CustomFormatMask = 12582912
 };
 
+enum class TypeKind
+{
+    Class,
+    Delegate,
+    Enum,
+    Interface,
+    Struct
+};
+
+using TypeDefinitionHandle = int;
+
 namespace enum_ops
 {
     template<typename T>
