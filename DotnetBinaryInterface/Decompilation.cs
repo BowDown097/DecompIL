@@ -14,7 +14,7 @@ public static unsafe class Decompilation
         UniversalAssemblyResolver resolver = new(assemblyPath, false, module.Metadata.DetectTargetFrameworkId());
 
         for (int i = 0; i < info->probingPaths.Size(); i++)
-            resolver.AddSearchDirectory(info->probingPaths.At(i).ToString());
+            resolver.AddSearchDirectory(info->probingPaths[i].ToString());
 
         switch (info->language)
         {

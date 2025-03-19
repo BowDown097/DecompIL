@@ -18,23 +18,15 @@ public unsafe struct MarshalList<T> where T : unmanaged
         _data = (T*)NativeMemory.AlignedAlloc(checked((nuint)capacity * (nuint)sizeof(T)), Utils.AlignOf<T>());
     }
 
-    public T this[int index]
+    public readonly ref T this[int index] => ref _data[index];
+
+    public readonly ref T At(int index)
     {
-        readonly get
-        {
-            if ((uint)index >= (uint)_size)
-                throw new IndexOutOfRangeException();
-            return _data[index];
-        }
-        set
-        {
-            if ((uint)index >= (uint)_size)
-                throw new IndexOutOfRangeException();
-            _data[index] = value;
-        }
+        if ((uint)index >= (uint)_size)
+            throw new IndexOutOfRangeException();
+        return ref _data[index];
     }
 
-    public readonly ref T At(int index) => ref _data[index];
     public readonly int Capacity() => _capacity;
     public readonly int Size() => _size;
 

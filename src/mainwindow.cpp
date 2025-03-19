@@ -115,13 +115,11 @@ void MainWindow::comboBoxChanged(int)
 
 void MainWindow::decompileType(TypeDefinitionHandle handle, const QString& assemblyPath, const QStringList& probingPaths)
 {
-    m_currentDecomp = {
-        .assemblyPath = assemblyPath,
-        .csVersion = CSVersionMap[ui->csVersionCombo->currentText()],
-        .handle = handle,
-        .language = DisplayLanguageMap[ui->languageCombo->currentText()],
-        .probingPaths = probingPaths
-    };
+    m_currentDecomp.assemblyPath = assemblyPath;
+    m_currentDecomp.csVersion = CSVersionMap[ui->csVersionCombo->currentText()];
+    m_currentDecomp.handle = handle;
+    m_currentDecomp.language = DisplayLanguageMap[ui->languageCombo->currentText()];
+    m_currentDecomp.probingPaths = probingPaths;
 
     if (QString code = Interface::decompileType(m_currentDecomp); !code.isEmpty())
     {
